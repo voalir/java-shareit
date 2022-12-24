@@ -6,6 +6,7 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.Valid;
+import java.util.Collection;
 
 @RestController
 @RequestMapping(path = "/users")
@@ -27,6 +28,11 @@ public class UserController {
     @GetMapping("/{userId}")
     UserDto getUser(@PathVariable Integer userId) {
         return userService.getUser(userId);
+    }
+
+    @GetMapping
+    Collection<UserDto> getAllUsers() {
+        return userService.getAllUsers();
     }
 
     @DeleteMapping("/{userId}")

@@ -4,6 +4,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.practicum.shareit.item.exception.ItemValidateException;
+import ru.practicum.shareit.user.exception.UserAccessException;
 import ru.practicum.shareit.user.exception.UserEmailEmployed;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 
@@ -44,4 +46,21 @@ public class ErrorHandler {
                 HttpStatus.CONFLICT
         );
     }
+
+    @ExceptionHandler
+    public ResponseEntity<Map<String, String>> handleUserAccessError(final UserAccessException e) {
+        return new ResponseEntity<>(
+                Map.of("user access error", e.getMessage()),
+                HttpStatus.FORBIDDEN
+        );
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Map<String, String>> handleItemValidateError(final ItemValidateException e) {
+        return new ResponseEntity<>(
+                Map.of("item validate error", e.getMessage()),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
 }

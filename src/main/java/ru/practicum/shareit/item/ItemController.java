@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -18,16 +19,16 @@ public class ItemController {
     ItemService itemService;
 
     @PostMapping
-    void addItem(@RequestHeader("X-Later-User-Id") int userId,
-                 @RequestBody ItemDto itemDto) {
-        itemService.addItem(userId, itemDto);
+    ItemDto addItem(@RequestHeader("X-Sharer-User-Id") int userId,
+                    @Valid @RequestBody ItemDto itemDto) {
+        return itemService.addItem(userId, itemDto);
     }
 
     @PatchMapping("/{itemId}")
-    void pathItem(@RequestHeader("X-Later-User-Id") int userId,
-                  @PathVariable int itemId,
-                  @RequestBody ItemDto itemDto) {
-        itemService.pathItem(userId, itemId, itemDto);
+    ItemDto pathItem(@RequestHeader("X-Sharer-User-Id") int userId,
+                     @PathVariable int itemId,
+                     @Valid @RequestBody ItemDto itemDto) {
+        return itemService.pathItem(userId, itemId, itemDto);
     }
 
     @GetMapping("/{itemId}")
@@ -36,7 +37,7 @@ public class ItemController {
     }
 
     @GetMapping
-    List<ItemDto> getItemsByOwner(@RequestHeader("X-Later-User-Id") int userId) {
+    List<ItemDto> getItemsByOwner(@RequestHeader("X-Sharer-User-Id") int userId) {
         return itemService.getItemsByOwner(userId);
     }
 

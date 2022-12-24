@@ -8,6 +8,8 @@ import ru.practicum.shareit.user.exception.UserEmailEmployed;
 import ru.practicum.shareit.user.model.User;
 
 import javax.validation.ValidationException;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -22,15 +24,14 @@ public class UserServiceImpl implements UserService {
         User user = UserDto.toUser(userDto);
         checkEmail(userDto.getEmail());
         user.setId(getId());
-        userStorage.addUser(user);
-        return UserDto.toUserDto(user);
+        return UserDto.toUserDto(userStorage.add(user));
     }
 
     @Override
     public UserDto updateUser(Integer userId, UserDto userDto) {
         User user = UserDto.toUser(userDto);
         user.setId(userId);
-        User currentUser = userStorage.getUser(user.getId());
+        User currentUser = userStorage.get(user.getId());
         if (user.getName() == null) {
             user.setName(currentUser.getName());
         }
@@ -39,18 +40,22 @@ public class UserServiceImpl implements UserService {
         } else if (!currentUser.getEmail().equals(user.getEmail())) {
             checkEmail(user.getEmail());
         }
-        userStorage.updateUser(user);
-        return UserDto.toUserDto(user);
+        return UserDto.toUserDto(userStorage.modify(user));
     }
 
     @Override
     public UserDto getUser(Integer userId) {
-        return UserDto.toUserDto(userStorage.getUser(userId));
+        return UserDto.toUserDto(userStorage.get(userId));
     }
 
     @Override
     public void deleteUser(Integer userId) {
-        userStorage.deleteUser(userId);
+        userStorage.remove(userId);
+    }
+
+    @Override
+    public Collection<UserDto> getAllUsers() {
+        return userStorage.getAll().stream().map(UserDto::toUserDto).collect(Collectors.toList());
     }
 
     private int getId() {

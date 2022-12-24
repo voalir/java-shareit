@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface ItemService {
 
-    void addItem(int userId, ItemDto itemDto);
+    ItemDto addItem(int userId, ItemDto itemDto);
 
-    void pathItem(int userId, int itemId, ItemDto itemDto);
+    ItemDto pathItem(int userId, int itemId, ItemDto itemDto);
 
     ItemDto getItem(int itemId);
 

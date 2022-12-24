@@ -22,8 +22,19 @@ public class ItemDto {
                 item.getId(),
                 item.getName(),
                 item.getDescription(),
-                item.isAvailable(),
+                item.getAvailable(),
                 item.getRequest() != null ? item.getRequest().getId() : null
+        );
+    }
+
+    public static Item toItem(ItemDto itemDto) {
+        return new Item(
+                itemDto.getId(),
+                itemDto.getName(),
+                itemDto.getDescription(),
+                itemDto.getAvailable(),
+                null,
+                null
         );
     }
 }
