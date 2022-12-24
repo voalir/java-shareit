@@ -3,7 +3,7 @@ package ru.practicum.shareit.item;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.service.ItemService;
 
 import java.util.List;
 
@@ -15,28 +15,33 @@ import java.util.List;
 public class ItemController {
 
     @Autowired
-    ItemDto itemDto;
+    ItemService itemService;
 
     @PostMapping
     void addItem(@RequestHeader("X-Later-User-Id") int userId,
-                 @RequestBody Item item) {
-
+                 @RequestBody ItemDto itemDto) {
+        itemService.addItem(userId, itemDto);
     }
 
     @PatchMapping("/{itemId}")
     void pathItem(@RequestHeader("X-Later-User-Id") int userId,
                   @PathVariable int itemId,
-                  @RequestBody Item item) {
-
+                  @RequestBody ItemDto itemDto) {
+        itemService.pathItem(userId, itemId, itemDto);
     }
 
     @GetMapping("/{itemId}")
-    Item getItem(@PathVariable int itemId) {
-        return itemDto.getItem(itemId);
+    ItemDto getItem(@PathVariable int itemId) {
+        return itemService.getItem(itemId);
     }
 
     @GetMapping
-    List<Item> getItemsByOwner(@RequestHeader("X-Later-User-Id") int userId) {
-        return itemDto.getItemsByOwner(userId);
+    List<ItemDto> getItemsByOwner(@RequestHeader("X-Later-User-Id") int userId) {
+        return itemService.getItemsByOwner(userId);
+    }
+
+    @GetMapping("/search")
+    List<ItemDto> searchItems(@RequestParam String text) {
+        return itemService.foundItems(text);
     }
 }
