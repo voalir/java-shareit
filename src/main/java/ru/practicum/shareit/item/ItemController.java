@@ -27,7 +27,7 @@ public class ItemController {
     @PatchMapping("/{itemId}")
     ItemDto pathItem(@RequestHeader("X-Sharer-User-Id") int userId,
                      @PathVariable int itemId,
-                     @Valid @RequestBody ItemDto itemDto) {
+                     @RequestBody ItemDto itemDto) {
         return itemService.pathItem(userId, itemId, itemDto);
     }
 

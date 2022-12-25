@@ -4,16 +4,19 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import ru.practicum.shareit.item.model.Item;
 
-/**
- * TODO Sprint add-controllers.
- */
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 @Data
 @AllArgsConstructor
 public class ItemDto {
 
-    int id;
+    Integer id;
+    @NotBlank
     String name;
+    @NotBlank
     String description;
+    @NotNull
     Boolean available;
     Integer requestId;
 

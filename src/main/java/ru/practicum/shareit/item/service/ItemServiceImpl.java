@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.item.dao.ItemStorage;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.exception.ItemValidateException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.dao.UserStorage;
 import ru.practicum.shareit.user.exception.UserAccessException;
@@ -26,7 +25,6 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto addItem(int userId, ItemDto itemDto) {
-        validateNewItem(itemDto);
         User user = userStorage.get(userId);
         Item item = ItemDto.toItem(itemDto);
         item.setId(getId());
@@ -70,18 +68,6 @@ public class ItemServiceImpl implements ItemService {
 
     private int getId() {
         return i++;
-    }
-
-    private void validateNewItem(ItemDto itemDto) {
-        if (itemDto.getAvailable() == null) {
-            throw new ItemValidateException("available must bu not null");
-        }
-        if (itemDto.getName() == null || itemDto.getName().isBlank()) {
-            throw new ItemValidateException("available must bu not blank");
-        }
-        if (itemDto.getDescription() == null || itemDto.getDescription().isBlank()) {
-            throw new ItemValidateException("available must bu not blank");
-        }
     }
 
     private Item getItemToUpdate(Item itemCurrent, ItemDto itemDto) {
