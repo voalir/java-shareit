@@ -1,26 +1,29 @@
 package ru.practicum.shareit.item.dao;
 
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.InMemoryObjectStorage;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
 import ru.practicum.shareit.item.model.Item;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
-public class InMemoryItemStorage extends InMemoryObjectStorage<Item> implements ItemStorage {
+public class InMemoryItemStorage implements ItemStorage {
+
+    private final Map<Integer, Item> items = new HashMap<>();
 
     @Override
     public Item add(Item item) {
-        super.putObject(item.getId(), item);
-        return super.get(item.getId());
+        items.put(item.getId(), item);
+        return item;
     }
 
     @Override
     public Item get(int id) {
-        if (super.containsObjectKey(id)) {
-            return super.get(id);
+        if (items.containsKey(id)) {
+            return items.get(id);
         } else {
             throw new ItemNotFoundException(String.format("item with id=%s not found", id));
         }
@@ -28,22 +31,23 @@ public class InMemoryItemStorage extends InMemoryObjectStorage<Item> implements 
 
     @Override
     public Item modify(Item item) {
-        super.putObject(item.getId(), item);
-        return super.get(item.getId());
+        items.put(item.getId(), item);
+        return item;
     }
 
     @Override
     public List<Item> getAllByOwner(int userId) {
-        return super.getAll().stream().filter(s -> s.getOwner().getId().equals(userId))
+        return items.values().stream().filter(s -> s.getOwner().getId().equals(userId))
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<Item> foundItemsByStringRequest(String text) {
-        return super.getAll().stream()
+        return items.values().stream()
                 .filter(Item::getAvailable)
                 .filter(s -> s.getDescription().toLowerCase().contains(text.toLowerCase())
                         || s.getName().toLowerCase().contains(text.toLowerCase()))
                 .collect(Collectors.toList());
     }
+
 }
