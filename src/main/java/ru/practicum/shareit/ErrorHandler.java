@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.practicum.shareit.item.exception.ItemNotFoundException;
 import ru.practicum.shareit.item.exception.ItemValidateException;
 import ru.practicum.shareit.user.exception.UserAccessException;
 import ru.practicum.shareit.user.exception.UserEmailEmployed;
@@ -18,7 +19,15 @@ public class ErrorHandler {
     @ExceptionHandler
     public ResponseEntity<Map<String, String>> handleUser(final UserNotFoundException e) {
         return new ResponseEntity<>(
-                Map.of("user error", e.getMessage()),
+                Map.of("user found error", e.getMessage()),
+                HttpStatus.NOT_FOUND
+        );
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Map<String, String>> handleItem(final ItemNotFoundException e) {
+        return new ResponseEntity<>(
+                Map.of("item found error", e.getMessage()),
                 HttpStatus.NOT_FOUND
         );
     }
