@@ -8,7 +8,7 @@ public interface ItemService {
 
     ItemDto addItem(int userId, ItemDto itemDto);
 
-    ItemDto pathItem(int userId, int itemId, ItemDto itemDto);
+    ItemDto updateItem(int userId, int itemId, ItemDto itemDto);
 
     ItemDto getItem(int itemId);
 

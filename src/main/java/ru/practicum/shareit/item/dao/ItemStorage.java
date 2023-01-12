@@ -14,5 +14,5 @@ public interface ItemStorage {
 
     List<Item> getAllByOwner(int userId);
 
-    List<Item> foundItemsByStringRequest(String text);
+    List<Item> findItems(String text);
 }

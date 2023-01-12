@@ -28,7 +28,7 @@ public class ItemController {
     ItemDto pathItem(@RequestHeader("X-Sharer-User-Id") int userId,
                      @PathVariable int itemId,
                      @RequestBody ItemDto itemDto) {
-        return itemService.pathItem(userId, itemId, itemDto);
+        return itemService.updateItem(userId, itemId, itemDto);
     }
 
     @GetMapping("/{itemId}")

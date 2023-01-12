@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.user.dao.UserStorage;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.exception.UserEmailEmployed;
 import ru.practicum.shareit.user.model.User;
 
@@ -21,15 +22,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto addUser(UserDto userDto) {
-        User user = UserDto.toUser(userDto);
+        User user = UserMapper.toUser(userDto);
         checkEmail(userDto.getEmail());
         user.setId(getId());
-        return UserDto.toUserDto(userStorage.add(user));
+        return UserMapper.toUserDto(userStorage.add(user));
     }
 
     @Override
     public UserDto updateUser(Integer userId, UserDto userDto) {
-        User user = UserDto.toUser(userDto);
+        User user = UserMapper.toUser(userDto);
         user.setId(userId);
         User currentUser = userStorage.get(user.getId());
         if (user.getName() == null) {
@@ -40,12 +41,12 @@ public class UserServiceImpl implements UserService {
         } else if (!currentUser.getEmail().equals(user.getEmail())) {
             checkEmail(user.getEmail());
         }
-        return UserDto.toUserDto(userStorage.modify(user));
+        return UserMapper.toUserDto(userStorage.modify(user));
     }
 
     @Override
     public UserDto getUser(Integer userId) {
-        return UserDto.toUserDto(userStorage.get(userId));
+        return UserMapper.toUserDto(userStorage.get(userId));
     }
 
     @Override
@@ -55,7 +56,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Collection<UserDto> getAllUsers() {
-        return userStorage.getAll().stream().map(UserDto::toUserDto).collect(Collectors.toList());
+        return userStorage.getAll().stream().map(UserMapper::toUserDto).collect(Collectors.toList());
     }
 
     private int getId() {
