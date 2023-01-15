@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
+@Deprecated
 public class InMemoryItemStorage implements ItemStorage {
 
     private final Map<Integer, Item> items = new HashMap<>();
@@ -21,7 +22,7 @@ public class InMemoryItemStorage implements ItemStorage {
     }
 
     @Override
-    public Item get(int id) {
+    public Item get(Integer id) {
         if (items.containsKey(id)) {
             return items.get(id);
         } else {
@@ -36,7 +37,7 @@ public class InMemoryItemStorage implements ItemStorage {
     }
 
     @Override
-    public List<Item> getAllByOwner(int userId) {
+    public List<Item> getAllByOwner(Integer userId) {
         return items.values().stream().filter(s -> s.getOwner().getId().equals(userId))
                 .collect(Collectors.toList());
     }

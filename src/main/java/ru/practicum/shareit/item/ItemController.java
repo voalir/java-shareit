@@ -19,13 +19,13 @@ public class ItemController {
     ItemService itemService;
 
     @PostMapping
-    ItemDto addItem(@RequestHeader("X-Sharer-User-Id") int userId,
+    ItemDto addItem(@RequestHeader("X-Sharer-User-Id") Integer userId,
                     @Valid @RequestBody ItemDto itemDto) {
         return itemService.addItem(userId, itemDto);
     }
 
     @PatchMapping("/{itemId}")
-    ItemDto pathItem(@RequestHeader("X-Sharer-User-Id") int userId,
+    ItemDto pathItem(@RequestHeader("X-Sharer-User-Id") Integer userId,
                      @PathVariable int itemId,
                      @RequestBody ItemDto itemDto) {
         return itemService.updateItem(userId, itemId, itemDto);
@@ -37,7 +37,7 @@ public class ItemController {
     }
 
     @GetMapping
-    List<ItemDto> getItemsByOwner(@RequestHeader("X-Sharer-User-Id") int userId) {
+    List<ItemDto> getItemsByOwner(@RequestHeader("X-Sharer-User-Id") Integer userId) {
         return itemService.getItemsByOwner(userId);
     }
 

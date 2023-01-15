@@ -54,7 +54,7 @@ class ItemControllerTest {
         ItemDto itemDto = new ItemDto(null, "name", "desc", true, null);
         ItemDto addedItemDto = itemController.addItem(ownerId, itemDto);
         addedItemDto.setDescription("updated");
-        ItemDto updatedItem = itemController.pathItem(addedItemDto.getId(), addedItemDto.getId(), addedItemDto);
+        ItemDto updatedItem = itemController.pathItem(userDto.getId(), addedItemDto.getId(), addedItemDto);
         assertEquals(addedItemDto, updatedItem);
     }
 
@@ -73,8 +73,8 @@ class ItemControllerTest {
         Integer ownerId = userService.addUser(userDto).getId();
         ItemDto itemDto = new ItemDto(null, "name", "desc", true, null);
         ItemDto addedItemDto = itemController.addItem(ownerId, itemDto);
-        assertEquals(1, itemController.getItemsByOwner(addedItemDto.getId()).size());
-        assertEquals(addedItemDto, itemController.getItemsByOwner(addedItemDto.getId()).get(0));
+        assertEquals(1, itemController.getItemsByOwner(userDto.getId()).size());
+        assertEquals(addedItemDto, itemController.getItemsByOwner(userDto.getId()).get(0));
     }
 
     @Test
