@@ -17,17 +17,17 @@ import java.util.Date;
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
+    private Integer id;
     @Column(name = "start_date")
-    Date start;
+    private Date start;
     @Column(name = "end_date")
-    Date end;
+    private Date end;
     @JoinColumn(name = "item_id")
     @ManyToOne
-    Item item;
+    private Item item;
     @JoinColumn(name = "booker_id")
     @ManyToOne
-    User booker;
+    private User booker;
     @Enumerated(EnumType.STRING)
-    BookingStatus status;
+    private BookingStatus status;
 }

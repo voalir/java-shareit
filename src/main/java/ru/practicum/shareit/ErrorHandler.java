@@ -4,6 +4,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.practicum.shareit.booking.exception.BookingAccessException;
+import ru.practicum.shareit.booking.exception.BookingNotFoundException;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
 import ru.practicum.shareit.item.exception.ItemValidateException;
 import ru.practicum.shareit.user.exception.UserAccessException;
@@ -69,6 +71,22 @@ public class ErrorHandler {
         return new ResponseEntity<>(
                 Map.of("item validate error", e.getMessage()),
                 HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Map<String, String>> handleItemValidateError(final BookingAccessException e) {
+        return new ResponseEntity<>(
+                Map.of("user access error", e.getMessage()),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Map<String, String>> handleItemValidateError(final BookingNotFoundException e) {
+        return new ResponseEntity<>(
+                Map.of("booking found error", e.getMessage()),
+                HttpStatus.NOT_FOUND
         );
     }
 
