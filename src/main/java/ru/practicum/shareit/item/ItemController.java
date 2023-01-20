@@ -2,6 +2,7 @@ package ru.practicum.shareit.item;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 
@@ -26,14 +27,15 @@ public class ItemController {
 
     @PatchMapping("/{itemId}")
     ItemDto pathItem(@RequestHeader("X-Sharer-User-Id") Integer userId,
-                     @PathVariable int itemId,
+                     @PathVariable Integer itemId,
                      @RequestBody ItemDto itemDto) {
         return itemService.updateItem(userId, itemId, itemDto);
     }
 
     @GetMapping("/{itemId}")
-    ItemDto getItem(@PathVariable int itemId) {
-        return itemService.getItem(itemId);
+    ItemDto getItem(@RequestHeader("X-Sharer-User-Id") Integer userId,
+                    @PathVariable Integer itemId) {
+        return itemService.getItem(itemId, userId);
     }
 
     @GetMapping
@@ -44,5 +46,12 @@ public class ItemController {
     @GetMapping("/search")
     List<ItemDto> searchItems(@RequestParam String text) {
         return itemService.foundItems(text);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    CommentDto addComment(@RequestHeader("X-Sharer-User-Id") Integer userId,
+                          @PathVariable Integer itemId,
+                          @Valid @RequestBody CommentDto commentDto) {
+        return itemService.addComment(userId, itemId, commentDto);
     }
 }

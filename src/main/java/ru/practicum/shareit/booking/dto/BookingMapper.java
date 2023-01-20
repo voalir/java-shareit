@@ -17,6 +17,12 @@ public final class BookingMapper {
                 booking.getStatus());
     }
 
+    public static ShortBookingDto toShortBookingDto(Booking booking) {
+        return new ShortBookingDto(
+                booking.getId(),
+                booking.getBooker().getId());
+    }
+
     public static Booking toBooking(BookingDto bookingDto) {
         return new Booking(
                 bookingDto.getId(),

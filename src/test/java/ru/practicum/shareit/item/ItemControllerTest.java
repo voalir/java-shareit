@@ -64,7 +64,7 @@ class ItemControllerTest {
         Integer ownerId = userService.addUser(userDto).getId();
         ItemDto itemDto = new ItemDto(null, "name", "desc", true, null);
         ItemDto addedItemDto = itemController.addItem(ownerId, itemDto);
-        assertEquals(addedItemDto, itemController.getItem(addedItemDto.getId()));
+        assertEquals(addedItemDto, itemController.getItem(addedItemDto.getId(), 1));
     }
 
     @Test

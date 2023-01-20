@@ -10,6 +10,7 @@ import ru.practicum.shareit.booking.exception.BookingAccessException;
 import ru.practicum.shareit.booking.exception.BookingCheckException;
 import ru.practicum.shareit.booking.exception.BookingNotFoundException;
 import ru.practicum.shareit.booking.exception.BookingUnsupportedStatusException;
+import ru.practicum.shareit.item.exception.CommentCreateException;
 import ru.practicum.shareit.item.exception.ItemAvailableException;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
 import ru.practicum.shareit.item.exception.ItemValidateException;
@@ -107,6 +108,13 @@ public class ErrorHandler {
     public ResponseEntity<Map<String, String>> handleBookingCheckError(final ItemAvailableException e) {
         return new ResponseEntity<>(
                 Map.of("item available error", e.getMessage()),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ExceptionMessage> handleCommentCreateError(final CommentCreateException e) {
+        return new ResponseEntity<>(new ExceptionMessage("Comment create error: " + e.getMessage()),
                 HttpStatus.BAD_REQUEST
         );
     }

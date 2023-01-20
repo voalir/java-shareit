@@ -2,10 +2,18 @@ package ru.practicum.shareit.item.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.item.ItemRepository;
+import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.dto.BookingMapper;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.CommentMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
+import ru.practicum.shareit.item.exception.CommentCreateException;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.repository.CommentRepository;
+import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.exception.UserAccessException;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
@@ -21,6 +29,10 @@ public class ItemServiceImpl implements ItemService {
 
     @Autowired
     ItemRepository itemRepository;
+    @Autowired
+    BookingRepository bookingRepository;
+    @Autowired
+    CommentRepository commentRepository;
     @Autowired
     UserService userService;
 
@@ -47,8 +59,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto getItem(int itemId) {
-        return ItemMapper.toItemDto(findById(itemId));
+    public ItemDto getItem(int itemId, Integer userId) {
+        Item item = findById(itemId);
+        return fillAdditionalInfo(userId, item);
     }
 
     @Override
@@ -58,8 +71,25 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> getItemsByOwner(Integer userId) {
-        return itemRepository.findByOwner_id(userId).stream().map(ItemMapper::toItemDto)
+        return itemRepository.findByOwner_id(userId).stream().map((item) -> fillAdditionalInfo(userId, item))
                 .collect(Collectors.toList());
+    }
+
+    private ItemDto fillAdditionalInfo(Integer userId, Item item) {
+        ItemDto itemDto = ItemMapper.toItemDto(item);
+        if (item.getOwner().getId().equals(userId)) {
+            Booking nextBooking = bookingRepository.findNextBooking(item.getId());
+            if (nextBooking != null) {
+                itemDto.setNextBooking(BookingMapper.toShortBookingDto(nextBooking));
+            }
+            Booking previousBooking = bookingRepository.findLastBooking(item.getId());
+            if (previousBooking != null) {
+                itemDto.setLastBooking(BookingMapper.toShortBookingDto(previousBooking));
+            }
+        }
+        itemDto.setComments(commentRepository.findAllByItem_Id(item.getId()).stream().map(CommentMapper::toCommentDto)
+                .collect(Collectors.toList()));
+        return itemDto;
     }
 
     @Override
@@ -69,6 +99,21 @@ public class ItemServiceImpl implements ItemService {
         }
         return itemRepository.findItems(text).stream().map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public CommentDto addComment(Integer userId, Integer itemId, CommentDto commentDto) {
+        Item item = findById(itemId);
+        User user = UserMapper.toUser(userService.getUser(userId));
+        if (bookingRepository.findBookingByBookerAndItem(userId, itemId).size() > 0) {
+            Comment comment = CommentMapper.toComment(commentDto);
+            comment.setItem(item);
+            comment.setAuthor(user);
+            commentRepository.save(comment);
+            return CommentMapper.toCommentDto(comment);
+        } else {
+            throw new CommentCreateException("user don't use item");
+        }
     }
 
     private Item getItemToUpdate(Item itemCurrent, ItemDto itemDto) {

@@ -70,16 +70,19 @@ public class BookingServiceImpl implements BookingService {
         userService.getUser(userId);//checking user exist
         switch (bookingState) {
             case ALL:
-                return bookingRepository.getBookingByOwner(userId).stream().map(BookingMapper::toBookingDto)
+                return bookingRepository.findBookingByOwner(userId).stream().map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case PAST:
-                return bookingRepository.getBookingByOwnerAndStatePast(userId).stream().map(BookingMapper::toBookingDto)
+                return bookingRepository.findBookingByOwnerAndStatePast(userId).stream().map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case FUTURE:
-                return bookingRepository.getBookingByOwnerAndStateFuture(userId).stream().map(BookingMapper::toBookingDto)
+                return bookingRepository.findBookingByOwnerAndStateFuture(userId).stream().map(BookingMapper::toBookingDto)
+                        .collect(Collectors.toList());
+            case CURRENT:
+                return bookingRepository.findBookingByOwnerAndStateCurrent(userId).stream().map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             default:
-                return bookingRepository.getBookingByOwnerAndState(userId, bookingState).stream().map(BookingMapper::toBookingDto)
+                return bookingRepository.findBookingByOwnerAndState(userId, state).stream().map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
         }
     }
@@ -95,16 +98,19 @@ public class BookingServiceImpl implements BookingService {
         userService.getUser(userId);//checking user exist
         switch (bookingState) {
             case ALL:
-                return bookingRepository.getBookingByBooker(userId).stream().map(BookingMapper::toBookingDto)
+                return bookingRepository.findBookingByBooker(userId).stream().map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case PAST:
-                return bookingRepository.getBookingByBookerAndStatePast(userId).stream().map(BookingMapper::toBookingDto)
+                return bookingRepository.findBookingByBookerAndStatePast(userId).stream().map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case FUTURE:
-                return bookingRepository.getBookingByBookerAndStateFuture(userId).stream().map(BookingMapper::toBookingDto)
+                return bookingRepository.findBookingByBookerAndStateFuture(userId).stream().map(BookingMapper::toBookingDto)
+                        .collect(Collectors.toList());
+            case CURRENT:
+                return bookingRepository.findBookingByBookerAndStateCurrent(userId).stream().map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             default:
-                return bookingRepository.getBookingByBookerAndState(userId, bookingState).stream().map(BookingMapper::toBookingDto)
+                return bookingRepository.findBookingByBookerAndState(userId, state).stream().map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
         }
     }
