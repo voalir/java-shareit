@@ -52,6 +52,11 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    public Item getRawItem(int itemId) {
+        return findById(itemId);
+    }
+
+    @Override
     public List<ItemDto> getItemsByOwner(Integer userId) {
         return itemRepository.findByOwner_id(userId).stream().map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());

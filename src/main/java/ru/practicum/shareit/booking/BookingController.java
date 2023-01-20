@@ -3,9 +3,9 @@ package ru.practicum.shareit.booking;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.service.BookingService;
 
+import javax.validation.Valid;
 import java.util.Collection;
 
 @RestController
@@ -16,7 +16,7 @@ public class BookingController {
     BookingService bookingService;
 
     @PostMapping
-    BookingDto addBooking(@RequestHeader("X-Sharer-User-Id") Integer userId, @RequestBody BookingDto bookingDto) {
+    BookingDto addBooking(@RequestHeader("X-Sharer-User-Id") Integer userId, @Valid @RequestBody BookingDto bookingDto) {
         return bookingService.addBooking(bookingDto, userId);
     }
 
@@ -27,21 +27,21 @@ public class BookingController {
     }
 
     @PatchMapping("/{bookingId}")
-    BookingDto updateBooking(@RequestHeader("X-Sharer-User-Id") Integer userId,
-                             @PathVariable("bookingId") Integer bookingId,
-                             @RequestParam(name = "approved") Boolean approved) {
+    BookingDto confirmBooking(@RequestHeader("X-Sharer-User-Id") Integer userId,
+                              @PathVariable("bookingId") Integer bookingId,
+                              @RequestParam(name = "approved") Boolean approved) {
         return bookingService.confirmBooking(bookingId, userId, approved);
     }
 
     @GetMapping("/owner")
     Collection<BookingDto> getBookingByOwner(@RequestHeader("X-Sharer-User-Id") Integer userId,
-                                             @RequestParam(name = "state", defaultValue = "ALL") BookingState state) {
+                                             @RequestParam(name = "state", defaultValue = "ALL") String state) {
         return bookingService.getBookingByOwner(userId, state);
     }
 
     @GetMapping
     Collection<BookingDto> getBookingByBooker(@RequestHeader("X-Sharer-User-Id") Integer userId,
-                                              @RequestParam(name = "state", defaultValue = "ALL") BookingState state) {
+                                              @RequestParam(name = "state", defaultValue = "ALL") String state) {
         return bookingService.getBookingByBooker(userId, state);
     }
 }

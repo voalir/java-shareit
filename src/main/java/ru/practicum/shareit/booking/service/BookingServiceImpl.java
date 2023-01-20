@@ -7,15 +7,22 @@ import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.exception.BookingAccessException;
+import ru.practicum.shareit.booking.exception.BookingCheckException;
 import ru.practicum.shareit.booking.exception.BookingNotFoundException;
+import ru.practicum.shareit.booking.exception.BookingUnsupportedStatusException;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.item.dto.ItemMapper;
+import ru.practicum.shareit.item.exception.ItemAvailableException;
+import ru.practicum.shareit.item.exception.ItemNotFoundException;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.util.Collection;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -39,9 +46,13 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDto confirmBooking(Integer bookingId, Integer userId, Boolean approved) {
         Booking booking = findById(bookingId);
-        if (!booking.getBooker().getId().equals(userId)) {
+        if (booking.getStatus() != BookingStatus.WAITING) {
+            throw new BookingCheckException(
+                    String.format("booking with id=%s finished", bookingId));
+        }
+        if (!booking.getItem().getOwner().getId().equals(userId)) {
             throw new BookingAccessException(
-                    String.format("user with id=%s does not have access to the booking with id=%s", userId, bookingId));
+                    String.format("user with id=%s does not have access to the booking item with id=%s", userId, booking.getItem().getId()));
         }
         booking.setStatus(approved ? BookingStatus.APPROVED : BookingStatus.REJECTED);
         log.info("save booking: " + booking);
@@ -49,29 +60,61 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Collection<BookingDto> getBookingByOwner(Integer userId, BookingState state) {
-        if (state == BookingState.ALL) {
-            return bookingRepository.getBookingByOwner(userId);
-        } else {
-            return bookingRepository.getBookingByOwnerAndState(userId, state);
+    public Collection<BookingDto> getBookingByOwner(Integer userId, String state) {
+        BookingState bookingState;
+        try {
+            bookingState = BookingState.valueOf(state);
+        } catch (IllegalArgumentException e) {
+            throw new BookingUnsupportedStatusException(state);
         }
-
+        userService.getUser(userId);//checking user exist
+        switch (bookingState) {
+            case ALL:
+                return bookingRepository.getBookingByOwner(userId).stream().map(BookingMapper::toBookingDto)
+                        .collect(Collectors.toList());
+            case PAST:
+                return bookingRepository.getBookingByOwnerAndStatePast(userId).stream().map(BookingMapper::toBookingDto)
+                        .collect(Collectors.toList());
+            case FUTURE:
+                return bookingRepository.getBookingByOwnerAndStateFuture(userId).stream().map(BookingMapper::toBookingDto)
+                        .collect(Collectors.toList());
+            default:
+                return bookingRepository.getBookingByOwnerAndState(userId, bookingState).stream().map(BookingMapper::toBookingDto)
+                        .collect(Collectors.toList());
+        }
     }
 
     @Override
-    public Collection<BookingDto> getBookingByBooker(Integer userId, BookingState state) {
-        if (state == BookingState.ALL) {
-            return bookingRepository.getBookingByBooker(userId);
-        } else {
-            return bookingRepository.getBookingByBookerAndState(userId, state);
+    public Collection<BookingDto> getBookingByBooker(Integer userId, String state) {
+        BookingState bookingState;
+        try {
+            bookingState = BookingState.valueOf(state);
+        } catch (IllegalArgumentException e) {
+            throw new BookingUnsupportedStatusException(state);
+        }
+        userService.getUser(userId);//checking user exist
+        switch (bookingState) {
+            case ALL:
+                return bookingRepository.getBookingByBooker(userId).stream().map(BookingMapper::toBookingDto)
+                        .collect(Collectors.toList());
+            case PAST:
+                return bookingRepository.getBookingByBookerAndStatePast(userId).stream().map(BookingMapper::toBookingDto)
+                        .collect(Collectors.toList());
+            case FUTURE:
+                return bookingRepository.getBookingByBookerAndStateFuture(userId).stream().map(BookingMapper::toBookingDto)
+                        .collect(Collectors.toList());
+            default:
+                return bookingRepository.getBookingByBookerAndState(userId, bookingState).stream().map(BookingMapper::toBookingDto)
+                        .collect(Collectors.toList());
         }
     }
 
     @Override
     public BookingDto getBookingById(Integer userId, Integer bookingId) {
+        userService.getUser(userId);//checking user exist
         Booking booking = findById(bookingId);
-        if (!Objects.equals(booking.getBooker().getId(), bookingId)
-                || !Objects.equals(booking.getItem().getOwner().getId(), bookingId)) {
+        if (!Objects.equals(booking.getBooker().getId(), userId)
+                && !Objects.equals(booking.getItem().getOwner().getId(), userId)) {
             throw new BookingAccessException(
                     String.format("user with id=%s does not have access to the booking with id=%s", userId, bookingId));
         }
@@ -79,11 +122,25 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private Booking prepareBookingToSave(BookingDto bookingDto, Integer userId) {
-        bookingDto.setItem(itemService.getItem(bookingDto.getItemId()));
+        checkBookingDtoInterval(bookingDto);
+        Item item = itemService.getRawItem(bookingDto.getItemId());
+        if (!item.getAvailable()) {
+            throw new ItemAvailableException("item with id=" + bookingDto.getItemId() + " is not available");
+        }
+        if (item.getOwner().getId().equals(userId)) {
+            throw new ItemNotFoundException("item with id=" + bookingDto.getItemId() + " is not available to owner");
+        }
+        bookingDto.setItem(ItemMapper.toItemDto(item));
         bookingDto.setBooker(userService.getUser(userId));
         Booking booking = BookingMapper.toBooking(bookingDto);
         booking.setStatus(BookingStatus.WAITING);
         return booking;
+    }
+
+    private void checkBookingDtoInterval(BookingDto bookingDto) {
+        if (bookingDto.getStart().isAfter(bookingDto.getEnd())) {
+            throw new BookingCheckException("date start after date end");
+        }
     }
 
     private Booking findById(Integer id) {
