@@ -10,11 +10,11 @@ public interface ItemService {
 
     ItemDto addItem(Integer userId, ItemDto itemDto);
 
-    ItemDto updateItem(Integer userId, int itemId, ItemDto itemDto);
+    ItemDto updateItem(Integer userId, Integer itemId, ItemDto itemDto);
 
-    ItemDto getItem(int itemId, Integer userId);
+    ItemDto getItem(Integer itemId, Integer userId);
 
-    Item getRawItem(int itemId);
+    Item getRawItem(Integer itemId);
 
     List<ItemDto> getItemsByOwner(Integer userId);
 

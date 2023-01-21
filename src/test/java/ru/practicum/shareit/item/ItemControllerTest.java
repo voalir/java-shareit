@@ -10,6 +10,7 @@ import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.Validation;
 import javax.validation.Validator;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -32,29 +33,29 @@ class ItemControllerTest {
     void addItem() {
         UserDto userDto = new UserDto(null, "name", "vAddOwner@v.v");
         Integer ownerId = userService.addUser(userDto).getId();
-        ItemDto itemDto = new ItemDto(null, "name", "desc", true, null);
+        ItemDto itemDto = new ItemDto(null, "name", "desc", true, null, null, null, new ArrayList<>());
         assertEquals(0, validator.validate(itemDto).size());
         ItemDto addedItemDto = itemController.addItem(ownerId, itemDto);
         itemDto.setId(addedItemDto.getId());
         assertEquals(itemDto, addedItemDto);
         assertEquals(1, validator.validate(
-                new ItemDto(null, "", "desc", true, null)).size());
+                new ItemDto(null, "", "desc", true, null, null, null, null)).size());
         assertEquals(1, validator.validate(
-                new ItemDto(null, null, "desc", true, null)).size());
+                new ItemDto(null, null, "desc", true, null, null, null, null)).size());
         assertEquals(1, validator.validate(
-                new ItemDto(null, "name", "", true, null)).size());
+                new ItemDto(null, "name", "", true, null, null, null, null)).size());
         assertEquals(1, validator.validate(
-                new ItemDto(null, "name", null, true, null)).size());
+                new ItemDto(null, "name", null, true, null, null, null, null)).size());
     }
 
     @Test
     void pathItem() {
         UserDto userDto = new UserDto(null, "name", "vPathOwner@v.v");
         Integer ownerId = userService.addUser(userDto).getId();
-        ItemDto itemDto = new ItemDto(null, "name", "desc", true, null);
+        ItemDto itemDto = new ItemDto(null, "name", "desc", true, null, null, null, null);
         ItemDto addedItemDto = itemController.addItem(ownerId, itemDto);
         addedItemDto.setDescription("updated");
-        ItemDto updatedItem = itemController.pathItem(userDto.getId(), addedItemDto.getId(), addedItemDto);
+        ItemDto updatedItem = itemController.pathItem(ownerId, addedItemDto.getId(), addedItemDto);
         assertEquals(addedItemDto, updatedItem);
     }
 
@@ -62,7 +63,7 @@ class ItemControllerTest {
     void getItem() {
         UserDto userDto = new UserDto(null, "name", "vGetOwner@v.v");
         Integer ownerId = userService.addUser(userDto).getId();
-        ItemDto itemDto = new ItemDto(null, "name", "desc", true, null);
+        ItemDto itemDto = new ItemDto(null, "name", "desc", true, null, null, null, null);
         ItemDto addedItemDto = itemController.addItem(ownerId, itemDto);
         assertEquals(addedItemDto, itemController.getItem(addedItemDto.getId(), 1));
     }
@@ -71,17 +72,17 @@ class ItemControllerTest {
     void getItemsByOwner() {
         UserDto userDto = new UserDto(null, "name", "vGetByOwner@v.v");
         Integer ownerId = userService.addUser(userDto).getId();
-        ItemDto itemDto = new ItemDto(null, "name", "desc", true, null);
+        ItemDto itemDto = new ItemDto(null, "name", "desc", true, null, null, null, null);
         ItemDto addedItemDto = itemController.addItem(ownerId, itemDto);
-        assertEquals(1, itemController.getItemsByOwner(userDto.getId()).size());
-        assertEquals(addedItemDto, itemController.getItemsByOwner(userDto.getId()).get(0));
+        assertEquals(1, itemController.getItemsByOwner(ownerId).size());
+        assertEquals(addedItemDto, itemController.getItemsByOwner(ownerId).get(0));
     }
 
     @Test
     void searchItems() {
         UserDto userDto = new UserDto(null, "name", "vSearchOwner@v.v");
         Integer ownerId = userService.addUser(userDto).getId();
-        ItemDto itemDto = new ItemDto(null, "name", "search string", true, null);
+        ItemDto itemDto = new ItemDto(null, "name", "search string", true, null, null, null, null);
         ItemDto addedItemDto = itemController.addItem(ownerId, itemDto);
         assertEquals(1, itemController.searchItems("sEaRcH").size());
         assertEquals(addedItemDto, itemController.searchItems("sEaRcH").get(0));

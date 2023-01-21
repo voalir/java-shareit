@@ -11,7 +11,4 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
 
     List<Comment> findAllByItem_Id(Integer itemId);
 
-    //@Query("select c from comment as c where c.item = ?1")
-    //List<Comment> findByItemIn(List<Item> items);
-
 }

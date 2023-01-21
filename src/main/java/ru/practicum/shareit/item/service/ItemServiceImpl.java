@@ -45,7 +45,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto updateItem(Integer userId, int itemId, ItemDto itemDto) {
+    public ItemDto updateItem(Integer userId, Integer itemId, ItemDto itemDto) {
         Item itemCurrent = findById(itemId);
         Item item = getItemToUpdate(itemCurrent, itemDto);
         User user = UserMapper.toUser(userService.getUser(userId));
@@ -59,13 +59,13 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto getItem(int itemId, Integer userId) {
+    public ItemDto getItem(Integer itemId, Integer userId) {
         Item item = findById(itemId);
         return fillAdditionalInfo(userId, item);
     }
 
     @Override
-    public Item getRawItem(int itemId) {
+    public Item getRawItem(Integer itemId) {
         return findById(itemId);
     }
 
@@ -97,8 +97,7 @@ public class ItemServiceImpl implements ItemService {
         if (text.isBlank()) {
             return new ArrayList<>();
         }
-        return itemRepository.findItems(text).stream().map(ItemMapper::toItemDto)
-                .collect(Collectors.toList());
+        return itemRepository.findItems(text).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
 
     @Override
