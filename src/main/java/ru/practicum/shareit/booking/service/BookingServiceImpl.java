@@ -3,6 +3,7 @@ package ru.practicum.shareit.booking.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.exception.BookingAccessException;
@@ -37,6 +38,7 @@ public class BookingServiceImpl implements BookingService {
     ItemService itemService;
 
     @Override
+    @Transactional
     public BookingDto addBooking(BookingDto bookingDto, Integer userId) {
         Booking savedBooker = bookingRepository.save(prepareBookingToSave(bookingDto, userId));
         log.info("saved booking: " + savedBooker);
@@ -44,6 +46,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional
     public BookingDto confirmBooking(Integer bookingId, Integer userId, Boolean approved) {
         Booking booking = findById(bookingId);
         if (booking.getStatus() != BookingStatus.WAITING) {
