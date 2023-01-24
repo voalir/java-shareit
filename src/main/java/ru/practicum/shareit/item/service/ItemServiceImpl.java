@@ -71,7 +71,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> getItemsByOwner(Integer userId) {
-        return itemRepository.findByOwner_id(userId).stream().map((item) -> fillAdditionalInfo(userId, item))
+        return itemRepository.findByOwnerId(userId).stream().map((item) -> fillAdditionalInfo(userId, item))
                 .collect(Collectors.toList());
     }
 
@@ -87,7 +87,7 @@ public class ItemServiceImpl implements ItemService {
                 itemDto.setLastBooking(BookingMapper.toShortBookingDto(previousBooking));
             }
         }
-        itemDto.setComments(commentRepository.findAllByItem_Id(item.getId()).stream().map(CommentMapper::toCommentDto)
+        itemDto.setComments(commentRepository.findAllByItemId(item.getId()).stream().map(CommentMapper::toCommentDto)
                 .collect(Collectors.toList()));
         return itemDto;
     }
