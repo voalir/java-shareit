@@ -4,17 +4,18 @@ import ru.practicum.shareit.user.model.User;
 
 import java.util.Collection;
 
+@Deprecated
 public interface UserStorage {
 
     User add(User user);
 
-    void remove(int id);
+    void remove(Integer id);
 
     User modify(User object);
 
     Collection<User> getAll();
 
-    User get(int id);
+    User get(Integer id);
 
     boolean hasUserWithEmail(String email);
 

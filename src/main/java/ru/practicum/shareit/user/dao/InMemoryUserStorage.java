@@ -9,12 +9,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
+@Deprecated
 public class InMemoryUserStorage implements UserStorage {
 
     private final Map<Integer, User> users = new HashMap<>();
 
     @Override
-    public void remove(int id) {
+    public void remove(Integer id) {
         users.remove(id);
     }
 
@@ -30,7 +31,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User get(int id) {
+    public User get(Integer id) {
         if (users.containsKey(id)) {
             return users.get(id);
         } else {

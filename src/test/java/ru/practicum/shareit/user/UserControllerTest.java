@@ -4,8 +4,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.exception.UserEmailEmployed;
 
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -33,7 +33,7 @@ class UserControllerTest {
         UserDto addedUser = userController.addUser(userDto);
         assertEquals(userDto.getEmail(), addedUser.getEmail());
         assertEquals(userDto.getName(), addedUser.getName());
-        assertThrows(UserEmailEmployed.class, () ->
+        assertThrows(DataIntegrityViolationException.class, () ->
                 userController.addUser(new UserDto(null, "name", "v@v.v")));
     }
 
@@ -50,7 +50,7 @@ class UserControllerTest {
         updatedUser = userController.pathUser(addedUser.getId(), addedUser);
         assertEquals(addedUser, updatedUser);
         addedUser.setEmail("vForPathDuplicate@v.v");
-        assertThrows(UserEmailEmployed.class, () -> userController.pathUser(addedUser.getId(), addedUser));
+        assertThrows(DataIntegrityViolationException.class, () -> userController.pathUser(addedUser.getId(), addedUser));
     }
 
     @Test

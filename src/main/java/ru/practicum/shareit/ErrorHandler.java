@@ -1,9 +1,17 @@
 package ru.practicum.shareit;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.practicum.shareit.booking.exception.BookingAccessException;
+import ru.practicum.shareit.booking.exception.BookingCheckException;
+import ru.practicum.shareit.booking.exception.BookingNotFoundException;
+import ru.practicum.shareit.booking.exception.BookingUnsupportedStatusException;
+import ru.practicum.shareit.item.exception.CommentCreateException;
+import ru.practicum.shareit.item.exception.ItemAvailableException;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
 import ru.practicum.shareit.item.exception.ItemValidateException;
 import ru.practicum.shareit.user.exception.UserAccessException;
@@ -70,6 +78,58 @@ public class ErrorHandler {
                 Map.of("item validate error", e.getMessage()),
                 HttpStatus.BAD_REQUEST
         );
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Map<String, String>> handleBookingAccessError(final BookingAccessException e) {
+        return new ResponseEntity<>(
+                Map.of("user access error", e.getMessage()),
+                HttpStatus.NOT_FOUND
+        );
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Map<String, String>> handleBookingNotFoundError(final BookingNotFoundException e) {
+        return new ResponseEntity<>(
+                Map.of("booking found error", e.getMessage()),
+                HttpStatus.NOT_FOUND
+        );
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Map<String, String>> handleBookingCheckError(final BookingCheckException e) {
+        return new ResponseEntity<>(
+                Map.of("booking check error", e.getMessage()),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Map<String, String>> handleBookingCheckError(final ItemAvailableException e) {
+        return new ResponseEntity<>(
+                Map.of("item available error", e.getMessage()),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ExceptionMessage> handleCommentCreateError(final CommentCreateException e) {
+        return new ResponseEntity<>(new ExceptionMessage("Comment create error: " + e.getMessage()),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ExceptionMessage> handleBookingUnsupportedStatusError(final BookingUnsupportedStatusException e) {
+        return new ResponseEntity<>(new ExceptionMessage("Unknown state: " + e.getMessage()),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @Getter
+    @RequiredArgsConstructor
+    private static class ExceptionMessage {
+        private final String error;
     }
 
 }

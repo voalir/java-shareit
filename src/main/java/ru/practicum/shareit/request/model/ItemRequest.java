@@ -1,17 +1,24 @@
 package ru.practicum.shareit.request.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.practicum.shareit.user.model.User;
 
-import java.util.Date;
+import javax.persistence.*;
 
-/**
- * TODO Sprint add-item-requests.
- */
+@Entity
+@Table(name = "requests")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ItemRequest {
-    int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Integer id;
     String description;
+    @JoinColumn(name = "requestor_id")
+    @ManyToOne
     User requestor;
-    Date created;
+    //Date created;
 }
