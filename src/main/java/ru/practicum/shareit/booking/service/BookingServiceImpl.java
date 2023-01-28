@@ -49,20 +49,14 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     public BookingDto confirmBooking(Integer bookingId, Integer userId, Boolean approved) {
         Booking booking = findById(bookingId);
-        if (booking.getStatus() != BookingStatus.WAITING) {
-            throw new BookingCheckException(
-                    String.format("booking with id=%s finished", bookingId));
-        }
-        if (!booking.getItem().getOwner().getId().equals(userId)) {
-            throw new BookingAccessException(
-                    String.format("user with id=%s does not have access to the booking item with id=%s", userId, booking.getItem().getId()));
-        }
+        checkConfirmBooking(bookingId, userId, booking);
         booking.setStatus(approved ? BookingStatus.APPROVED : BookingStatus.REJECTED);
         log.info("save booking: " + booking);
         return BookingMapper.toBookingDto(bookingRepository.save(booking));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Collection<BookingDto> getBookingByOwner(Integer userId, String state) {
         BookingState bookingState;
         try {
@@ -91,6 +85,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Collection<BookingDto> getBookingByBooker(Integer userId, String state) {
         BookingState bookingState;
         try {
@@ -119,6 +114,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public BookingDto getBookingById(Integer userId, Integer bookingId) {
         userService.getUser(userId);//checking user exist
         Booking booking = findById(bookingId);
@@ -155,5 +151,22 @@ public class BookingServiceImpl implements BookingService {
     private Booking findById(Integer id) {
         return bookingRepository.findById(id).orElseThrow(
                 () -> new BookingNotFoundException("booking with id=" + id + " not found"));
+    }
+
+    private void checkConfirmBooking(Integer bookingId, Integer userId, Booking booking) {
+        if (booking.getStatus() != BookingStatus.WAITING) {
+            throw new BookingCheckException(
+                    String.format("booking with id=%s finished", bookingId));
+        }
+        if (!booking.getItem().getOwner().getId().equals(userId)) {
+            throw new BookingAccessException(
+                    String.format("user with id=%s does not have access to the booking item with id=%s",
+                            userId, booking.getItem().getId()));
+        }
+        if (bookingRepository.findApprovedBookingByPeriodAndItem(booking).size() > 0) {
+            throw new BookingAccessException(
+                    String.format("user with id=%s does not have access to the booking item with id=%s. " +
+                            "This item is busy for this time", userId, booking.getItem().getId()));
+        }
     }
 }

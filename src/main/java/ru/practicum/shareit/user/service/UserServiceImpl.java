@@ -22,6 +22,7 @@ public class UserServiceImpl implements UserService {
     UserRepository userRepository;
 
     @Override
+    @Transactional
     public UserDto addUser(UserDto userDto) {
         User user = UserMapper.toUser(userDto);
         checkEmailByNull(user.getEmail());
@@ -45,6 +46,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserDto getUser(Integer userId) {
         return UserMapper.toUserDto(findById(userId));
     }
@@ -56,6 +58,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Collection<UserDto> getAllUsers() {
         return userRepository.findAll().stream().map(UserMapper::toUserDto).collect(Collectors.toList());
     }

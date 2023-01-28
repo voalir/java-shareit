@@ -38,6 +38,7 @@ public class ItemServiceImpl implements ItemService {
     UserService userService;
 
     @Override
+    @Transactional
     public ItemDto addItem(Integer userId, ItemDto itemDto) {
         User user = UserMapper.toUser(userService.getUser(userId));
         Item item = ItemMapper.toItem(itemDto);
@@ -61,40 +62,27 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ItemDto getItem(Integer itemId, Integer userId) {
         Item item = findById(itemId);
         return fillAdditionalInfo(userId, item);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Item getRawItem(Integer itemId) {
         return findById(itemId);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ItemDto> getItemsByOwner(Integer userId) {
         return itemRepository.findByOwnerId(userId).stream().map((item) -> fillAdditionalInfo(userId, item))
                 .collect(Collectors.toList());
     }
 
-    private ItemDto fillAdditionalInfo(Integer userId, Item item) {
-        ItemDto itemDto = ItemMapper.toItemDto(item);
-        if (item.getOwner().getId().equals(userId)) {
-            Booking nextBooking = bookingRepository.findNextBooking(item.getId());
-            if (nextBooking != null) {
-                itemDto.setNextBooking(BookingMapper.toShortBookingDto(nextBooking));
-            }
-            Booking previousBooking = bookingRepository.findLastBooking(item.getId());
-            if (previousBooking != null) {
-                itemDto.setLastBooking(BookingMapper.toShortBookingDto(previousBooking));
-            }
-        }
-        itemDto.setComments(commentRepository.findAllByItemId(item.getId()).stream().map(CommentMapper::toCommentDto)
-                .collect(Collectors.toList()));
-        return itemDto;
-    }
-
     @Override
+    @Transactional(readOnly = true)
     public List<ItemDto> foundItems(String text) {
         if (text.isBlank()) {
             return new ArrayList<>();
@@ -103,6 +91,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public CommentDto addComment(Integer userId, Integer itemId, CommentDto commentDto) {
         Item item = findById(itemId);
         User user = UserMapper.toUser(userService.getUser(userId));
@@ -134,5 +123,22 @@ public class ItemServiceImpl implements ItemService {
     private Item findById(Integer id) {
         return itemRepository.findById(id).orElseThrow(
                 () -> new UserNotFoundException("item with id=" + id + " not found"));
+    }
+
+    private ItemDto fillAdditionalInfo(Integer userId, Item item) {
+        ItemDto itemDto = ItemMapper.toItemDto(item);
+        if (item.getOwner().getId().equals(userId)) {
+            Booking nextBooking = bookingRepository.findNextBooking(item.getId());
+            if (nextBooking != null) {
+                itemDto.setNextBooking(BookingMapper.toShortBookingDto(nextBooking));
+            }
+            Booking previousBooking = bookingRepository.findLastBooking(item.getId());
+            if (previousBooking != null) {
+                itemDto.setLastBooking(BookingMapper.toShortBookingDto(previousBooking));
+            }
+        }
+        itemDto.setComments(commentRepository.findAllByItemId(item.getId()).stream().map(CommentMapper::toCommentDto)
+                .collect(Collectors.toList()));
+        return itemDto;
     }
 }

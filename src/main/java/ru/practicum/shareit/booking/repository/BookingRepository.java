@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.booking.model.Booking;
 
@@ -51,4 +52,8 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
             "(select max(b.end) from Booking as b where b.item.id = ?1 and b.end < current_timestamp)")
     Booking findLastBooking(Integer itemId);
 
+    @Query("select b from Booking as b where b.item.id = :#{#booking.item.id} " +
+            "and b.start<:#{#booking.end} and b.end>:#{#booking.start} " +
+            "and status = ru.practicum.shareit.booking.model.BookingStatus.APPROVED")
+    Collection<Booking> findApprovedBookingByPeriodAndItem(@Param("booking") Booking booking);
 }
