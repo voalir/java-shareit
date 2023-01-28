@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -57,7 +58,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional(readOnly = true)
-    public Collection<BookingDto> getBookingByOwner(Integer userId, String state) {
+    public Collection<BookingDto> getBookingByOwner(Integer userId, String state, Integer from, Integer size) {
         BookingState bookingState;
         try {
             bookingState = BookingState.valueOf(state);
@@ -65,28 +66,29 @@ public class BookingServiceImpl implements BookingService {
             throw new BookingUnsupportedStatusException(state);
         }
         userService.getUser(userId);//checking user exist
+        PageRequest pageRequest = PageRequest.of(from / size, size);
         switch (bookingState) {
             case ALL:
-                return bookingRepository.findBookingByOwner(userId).stream().map(BookingMapper::toBookingDto)
+                return bookingRepository.findBookingByOwner(userId, pageRequest).stream().map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case PAST:
-                return bookingRepository.findBookingByOwnerAndStatePast(userId).stream().map(BookingMapper::toBookingDto)
+                return bookingRepository.findBookingByOwnerAndStatePast(userId, pageRequest).stream().map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case FUTURE:
-                return bookingRepository.findBookingByOwnerAndStateFuture(userId).stream().map(BookingMapper::toBookingDto)
+                return bookingRepository.findBookingByOwnerAndStateFuture(userId, pageRequest).stream().map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case CURRENT:
-                return bookingRepository.findBookingByOwnerAndStateCurrent(userId).stream().map(BookingMapper::toBookingDto)
+                return bookingRepository.findBookingByOwnerAndStateCurrent(userId, pageRequest).stream().map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             default:
-                return bookingRepository.findBookingByOwnerAndState(userId, state).stream().map(BookingMapper::toBookingDto)
+                return bookingRepository.findBookingByOwnerAndState(userId, state, pageRequest).stream().map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
         }
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Collection<BookingDto> getBookingByBooker(Integer userId, String state) {
+    public Collection<BookingDto> getBookingByBooker(Integer userId, String state, Integer from, Integer size) {
         BookingState bookingState;
         try {
             bookingState = BookingState.valueOf(state);
@@ -94,21 +96,22 @@ public class BookingServiceImpl implements BookingService {
             throw new BookingUnsupportedStatusException(state);
         }
         userService.getUser(userId);//checking user exist
+        PageRequest pageRequest = PageRequest.of(from / size, size);
         switch (bookingState) {
             case ALL:
-                return bookingRepository.findBookingByBooker(userId).stream().map(BookingMapper::toBookingDto)
+                return bookingRepository.findBookingByBooker(userId, pageRequest).stream().map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case PAST:
-                return bookingRepository.findBookingByBookerAndStatePast(userId).stream().map(BookingMapper::toBookingDto)
+                return bookingRepository.findBookingByBookerAndStatePast(userId, pageRequest).stream().map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case FUTURE:
-                return bookingRepository.findBookingByBookerAndStateFuture(userId).stream().map(BookingMapper::toBookingDto)
+                return bookingRepository.findBookingByBookerAndStateFuture(userId, pageRequest).stream().map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case CURRENT:
-                return bookingRepository.findBookingByBookerAndStateCurrent(userId).stream().map(BookingMapper::toBookingDto)
+                return bookingRepository.findBookingByBookerAndStateCurrent(userId, pageRequest).stream().map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             default:
-                return bookingRepository.findBookingByBookerAndState(userId, state).stream().map(BookingMapper::toBookingDto)
+                return bookingRepository.findBookingByBookerAndState(userId, state, pageRequest).stream().map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
         }
     }

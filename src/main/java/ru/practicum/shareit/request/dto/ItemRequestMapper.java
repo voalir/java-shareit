@@ -1,7 +1,12 @@
 package ru.practicum.shareit.request.dto;
 
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.dto.UserMapper;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class ItemRequestMapper {
     public static ItemRequestDto toItemRequestDto(ItemRequest itemRequest) {
@@ -9,7 +14,8 @@ public final class ItemRequestMapper {
                 itemRequest.getId(),
                 itemRequest.getDescription(),
                 UserMapper.toUserDto(itemRequest.getRequestor()),
-                itemRequest.getCreated()
+                itemRequest.getCreated(),
+                new ArrayList<>()
         );
     }
 
@@ -18,7 +24,17 @@ public final class ItemRequestMapper {
                 itemRequestDto.getId(),
                 itemRequestDto.getDescription(),
                 UserMapper.toUser(itemRequestDto.getRequestorId()),
-                itemRequestDto.getCreated()
+                LocalDateTime.now()
+        );
+    }
+
+    public static ItemRequestDto toItemRequestDto(ItemRequest itemRequest, List<ItemDto> items) {
+        return new ItemRequestDto(
+                itemRequest.getId(),
+                itemRequest.getDescription(),
+                UserMapper.toUserDto(itemRequest.getRequestor()),
+                itemRequest.getCreated(),
+                items == null ? new ArrayList<>() : items
         );
     }
 }

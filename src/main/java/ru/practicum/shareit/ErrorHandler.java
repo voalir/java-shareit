@@ -14,6 +14,7 @@ import ru.practicum.shareit.item.exception.CommentCreateException;
 import ru.practicum.shareit.item.exception.ItemAvailableException;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
 import ru.practicum.shareit.item.exception.ItemValidateException;
+import ru.practicum.shareit.request.exception.ItemRequestNotFoundException;
 import ru.practicum.shareit.user.exception.UserAccessException;
 import ru.practicum.shareit.user.exception.UserEmailEmployed;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
@@ -123,6 +124,14 @@ public class ErrorHandler {
     public ResponseEntity<ExceptionMessage> handleBookingUnsupportedStatusError(final BookingUnsupportedStatusException e) {
         return new ResponseEntity<>(new ExceptionMessage("Unknown state: " + e.getMessage()),
                 HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Map<String, String>> handleItemRequestNotFoundError(final ItemRequestNotFoundException e) {
+        return new ResponseEntity<>(
+                Map.of("item request found error", e.getMessage()),
+                HttpStatus.NOT_FOUND
         );
     }
 

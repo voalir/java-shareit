@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingMapper;
@@ -15,6 +16,8 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.exception.ItemRequestNotFoundException;
+import ru.practicum.shareit.request.repository.RequestRepository;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.exception.UserAccessException;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
@@ -23,6 +26,7 @@ import ru.practicum.shareit.user.service.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,6 +40,8 @@ public class ItemServiceImpl implements ItemService {
     CommentRepository commentRepository;
     @Autowired
     UserService userService;
+    @Autowired
+    RequestRepository requestRepository;
 
     @Override
     @Transactional
@@ -43,6 +49,10 @@ public class ItemServiceImpl implements ItemService {
         User user = UserMapper.toUser(userService.getUser(userId));
         Item item = ItemMapper.toItem(itemDto);
         item.setOwner(user);
+        if (itemDto.getRequestId() != null) {
+            item.setRequest(requestRepository.findById(itemDto.getRequestId()).orElseThrow(
+                    () -> new ItemRequestNotFoundException("request with id=" + itemDto.getRequestId() + " not found")));
+        }
         return ItemMapper.toItemDto(itemRepository.save(item));
     }
 
@@ -76,18 +86,19 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ItemDto> getItemsByOwner(Integer userId) {
-        return itemRepository.findByOwnerId(userId).stream().map((item) -> fillAdditionalInfo(userId, item))
-                .collect(Collectors.toList());
+    public List<ItemDto> getItemsByOwner(Integer userId, Integer from, Integer size) {
+        return itemRepository.findByOwnerId(userId, PageRequest.of(from / size, size))
+                .stream().map((item) -> fillAdditionalInfo(userId, item)).collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ItemDto> foundItems(String text) {
+    public List<ItemDto> foundItems(String text, Integer from, Integer size) {
         if (text.isBlank()) {
             return new ArrayList<>();
         }
-        return itemRepository.findItems(text).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
+        return itemRepository.findItems(text, PageRequest.of(from / size, size))
+                .stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
 
     @Override
@@ -95,7 +106,7 @@ public class ItemServiceImpl implements ItemService {
     public CommentDto addComment(Integer userId, Integer itemId, CommentDto commentDto) {
         Item item = findById(itemId);
         User user = UserMapper.toUser(userService.getUser(userId));
-        if (bookingRepository.findBookingByBookerAndItem(userId, itemId).size() > 0) {
+        if (bookingRepository.findBookingByBookerAndItem(userId, itemId, PageRequest.of(0, 1)).size() > 0) {
             Comment comment = CommentMapper.toComment(commentDto);
             comment.setItem(item);
             comment.setAuthor(user);
@@ -104,6 +115,21 @@ public class ItemServiceImpl implements ItemService {
         } else {
             throw new CommentCreateException("user don't use item");
         }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ItemDto> getItemByRequest(Integer id) {
+        return itemRepository.findByRequestId(id).stream().map(ItemMapper::toItemDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Map<Integer, List<ItemDto>> getItemsByRequest(List<Integer> ids) {
+        return itemRepository.findAllByRequestIdIn(ids).stream()
+                .collect(Collectors.groupingBy(item -> item.getRequest().getId()
+                        , Collectors.mapping(ItemMapper::toItemDto, Collectors.toList())));
     }
 
     private Item getItemToUpdate(Item itemCurrent, ItemDto itemDto) {

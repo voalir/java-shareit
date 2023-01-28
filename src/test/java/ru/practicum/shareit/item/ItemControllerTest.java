@@ -65,7 +65,7 @@ class ItemControllerTest {
         Integer ownerId = userService.addUser(userDto).getId();
         ItemDto itemDto = new ItemDto(null, "name", "desc", true, null, null, null, null);
         ItemDto addedItemDto = itemController.addItem(ownerId, itemDto);
-        assertEquals(addedItemDto, itemController.getItem(addedItemDto.getId(), 1));
+        assertEquals(addedItemDto, itemController.getItem(ownerId, addedItemDto.getId()));
     }
 
     @Test
@@ -74,8 +74,8 @@ class ItemControllerTest {
         Integer ownerId = userService.addUser(userDto).getId();
         ItemDto itemDto = new ItemDto(null, "name", "desc", true, null, null, null, null);
         ItemDto addedItemDto = itemController.addItem(ownerId, itemDto);
-        assertEquals(1, itemController.getItemsByOwner(ownerId).size());
-        assertEquals(addedItemDto, itemController.getItemsByOwner(ownerId).get(0));
+        assertEquals(1, itemController.getItemsByOwner(ownerId, 0, 10).size());
+        assertEquals(addedItemDto, itemController.getItemsByOwner(ownerId, 0, 10).get(0));
     }
 
     @Test
@@ -84,7 +84,7 @@ class ItemControllerTest {
         Integer ownerId = userService.addUser(userDto).getId();
         ItemDto itemDto = new ItemDto(null, "name", "search string", true, null, null, null, null);
         ItemDto addedItemDto = itemController.addItem(ownerId, itemDto);
-        assertEquals(1, itemController.searchItems("sEaRcH").size());
-        assertEquals(addedItemDto, itemController.searchItems("sEaRcH").get(0));
+        assertEquals(1, itemController.searchItems("sEaRcH", 0, 10).size());
+        assertEquals(addedItemDto, itemController.searchItems("sEaRcH", 0, 10).get(0));
     }
 }

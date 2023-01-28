@@ -1,25 +1,27 @@
 package ru.practicum.shareit.request;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.service.ItemRequestService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.Collection;
 
-/**
- * TODO Sprint add-item-requests.
- */
 @RestController
 @RequestMapping(path = "/requests")
+@Validated
 public class ItemRequestController {
 
     @Autowired
     ItemRequestService itemRequestService;
 
     @PostMapping
-    ItemRequestDto addRequest(@RequestHeader("X-Sharer-User-Id") Integer userId, @Valid @RequestBody ItemRequestDto itemRequestDto) {
+    ItemRequestDto addRequest(@RequestHeader("X-Sharer-User-Id") Integer userId,
+                              @Valid @RequestBody ItemRequestDto itemRequestDto) {
         return itemRequestService.addItemRequest(userId, itemRequestDto);
     }
 
@@ -28,15 +30,16 @@ public class ItemRequestController {
         return itemRequestService.getRequests(userId);
     }
 
-    @GetMapping
-    ItemRequestDto getRequest(@PathVariable("requestId") Integer itemRequestId) {
-        return itemRequestService.getRequest(itemRequestId);
+    @GetMapping("/{requestId}")
+    ItemRequestDto getRequest(@RequestHeader("X-Sharer-User-Id") Integer userId,
+                              @PathVariable("requestId") Integer itemRequestId) {
+        return itemRequestService.getRequest(itemRequestId, userId);
     }
 
     @GetMapping("/all")
     Collection<ItemRequestDto> getAllRequests(@RequestHeader("X-Sharer-User-Id") Integer userId,
-                                              @PathVariable("from") Integer from,
-                                              @PathVariable("size") Integer size) {
+                                              @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
+                                              @RequestParam(defaultValue = "10") @Positive Integer size) {
         return itemRequestService.getAllRequests(userId, from, size);
     }
 

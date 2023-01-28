@@ -9,9 +9,9 @@ public interface BookingService {
 
     BookingDto confirmBooking(Integer bookingId, Integer userId, Boolean approved);
 
-    Collection<BookingDto> getBookingByOwner(Integer userId, String state);
+    Collection<BookingDto> getBookingByOwner(Integer userId, String state, Integer from, Integer size);
 
-    Collection<BookingDto> getBookingByBooker(Integer userId, String state);
+    Collection<BookingDto> getBookingByBooker(Integer userId, String state, Integer from, Integer size);
 
     BookingDto getBookingById(Integer userId, Integer bookingId);
 }
