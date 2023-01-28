@@ -29,7 +29,7 @@ public class ItemRequestController {
     }
 
     @GetMapping
-    Collection<ItemRequestDto> getRequest(@PathVariable("requestId") Integer itemRequestId) {
+    ItemRequestDto getRequest(@PathVariable("requestId") Integer itemRequestId) {
         return itemRequestService.getRequest(itemRequestId);
     }
 

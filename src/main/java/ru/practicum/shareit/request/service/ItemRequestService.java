@@ -12,5 +12,5 @@ public interface ItemRequestService {
 
     Collection<ItemRequestDto> getRequests(Integer userId);
 
-    Collection<ItemRequestDto> getRequest(Integer itemRequestId);
+    ItemRequestDto getRequest(Integer itemRequestId);
 }
