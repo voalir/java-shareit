@@ -12,6 +12,7 @@ import ru.practicum.shareit.item.dto.CommentMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.exception.CommentCreateException;
+import ru.practicum.shareit.item.exception.ItemNotFoundException;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
@@ -20,7 +21,6 @@ import ru.practicum.shareit.request.exception.ItemRequestNotFoundException;
 import ru.practicum.shareit.request.repository.RequestRepository;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.exception.UserAccessException;
-import ru.practicum.shareit.user.exception.UserNotFoundException;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
@@ -148,7 +148,7 @@ public class ItemServiceImpl implements ItemService {
 
     private Item findById(Integer id) {
         return itemRepository.findById(id).orElseThrow(
-                () -> new UserNotFoundException("item with id=" + id + " not found"));
+                () -> new ItemNotFoundException("item with id=" + id + " not found"));
     }
 
     private ItemDto fillAdditionalInfo(Integer userId, Item item) {
