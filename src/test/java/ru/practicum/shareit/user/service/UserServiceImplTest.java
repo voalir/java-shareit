@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.test.context.jdbc.Sql;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import javax.validation.ValidationException;
@@ -26,6 +27,7 @@ class UserServiceImplTest {
 
     @Test
     @Order(0)
+    @Sql(value = {"/DropTables.sql"})
     void addUser() {
         UserDto userDto = new UserDto(null, "name", "mail@mail.m");
         UserDto userDto2 = new UserDto(null, "name2", "mail2@mail.m");
