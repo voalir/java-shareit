@@ -46,8 +46,7 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     List<Booking> findBookingByOwnerAndStateCurrent(Integer userId, Pageable pageable);
 
     @Query("select b from Booking as b where b.item.id = ?1 and b.start = " +
-            "(select min(b.start) from Booking as b where b.item.id = ?1 and b.start > current_timestamp)" +
-            "")
+            "(select min(b.start) from Booking as b where b.item.id = ?1 and b.start > current_timestamp)")
     Booking findNextBooking(Integer itemId);
 
     @Query("select b from Booking as b where b.item.id = ?1 and b.end = " +
