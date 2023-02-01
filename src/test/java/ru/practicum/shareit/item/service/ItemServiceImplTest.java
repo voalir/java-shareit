@@ -31,7 +31,7 @@ class ItemServiceImplTest {
 
     @Test
     @Order(0)
-    @Sql(value = {"/ItemTestPrepare.sql"})
+    @Sql(value = {"/DropTables.sql", "/ItemTestPrepare.sql"})
     void addItem() {
         ItemDto itemDto = getItemDto();
         Optional<ItemDto> createdItemDto = Optional.of(itemService.addItem(1, itemDto));

@@ -50,7 +50,7 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     public BookingDto confirmBooking(Integer bookingId, Integer userId, Boolean approved) {
         Booking booking = findById(bookingId);
-        checkConfirmBooking(bookingId, userId, booking);
+        checkConfirmBooking(bookingId, userId, booking, approved);
         booking.setStatus(approved ? BookingStatus.APPROVED : BookingStatus.REJECTED);
         log.info("save booking: " + booking);
         return BookingMapper.toBookingDto(bookingRepository.save(booking));
@@ -156,7 +156,7 @@ public class BookingServiceImpl implements BookingService {
                 () -> new BookingNotFoundException("booking with id=" + id + " not found"));
     }
 
-    private void checkConfirmBooking(Integer bookingId, Integer userId, Booking booking) {
+    private void checkConfirmBooking(Integer bookingId, Integer userId, Booking booking, Boolean approved) {
         if (booking.getStatus() != BookingStatus.WAITING) {
             throw new BookingCheckException(
                     String.format("booking with id=%s finished", bookingId));
@@ -166,7 +166,7 @@ public class BookingServiceImpl implements BookingService {
                     String.format("user with id=%s does not have access to the booking item with id=%s",
                             userId, booking.getItem().getId()));
         }
-        if (bookingRepository.findApprovedBookingByPeriodAndItem(booking).size() > 0) {
+        if (approved && bookingRepository.findApprovedBookingByPeriodAndItem(booking).size() > 0) {
             throw new BookingAccessException(
                     String.format("user with id=%s does not have access to the booking item with id=%s. " +
                             "This item is busy for this time", userId, booking.getItem().getId()));
