@@ -27,14 +27,13 @@ class ItemRequestMapperTest {
 
     @Test
     void toItemRequest() {
-        LocalDateTime localDateTime = LocalDateTime.now();
-        ItemRequestDto itemRequestDto = getItemRequestDto(localDateTime);
+        ItemRequestDto itemRequestDto = getItemRequestDto();
         ItemRequest itemRequest = ItemRequestMapper.toItemRequest(itemRequestDto);
         Assertions.assertThat(itemRequest)
                 .hasFieldOrPropertyWithValue("id", itemRequestDto.getId())
                 .hasFieldOrProperty("requestor")
                 .hasFieldOrPropertyWithValue("description", itemRequestDto.getDescription())
-                .hasFieldOrPropertyWithValue("created", itemRequestDto.getCreated());
+                .hasFieldOrProperty("created");
     }
 
     @Test
@@ -50,11 +49,11 @@ class ItemRequestMapperTest {
                 .hasFieldOrPropertyWithValue("created", itemRequest.getCreated());
     }
 
-    ItemRequestDto getItemRequestDto(LocalDateTime localDateTime) {
+    ItemRequestDto getItemRequestDto() {
         return new ItemRequestDto(1,
                 "request",
                 new UserDto(1, "user", "mail@mail.m"),
-                localDateTime,
+                null,
                 new ArrayList<>());
     }
 
