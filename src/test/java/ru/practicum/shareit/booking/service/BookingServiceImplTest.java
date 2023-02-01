@@ -9,11 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.dto.ShortBookingDto;
 import ru.practicum.shareit.booking.exception.BookingAccessException;
 import ru.practicum.shareit.booking.exception.BookingCheckException;
 import ru.practicum.shareit.booking.exception.BookingNotFoundException;
+import ru.practicum.shareit.booking.exception.BookingUnsupportedStatusException;
 import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.item.exception.ItemAvailableException;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 
@@ -55,6 +56,8 @@ class BookingServiceImplTest {
                     assertThat(dto.getBooker()).hasFieldOrPropertyWithValue("id", 2);
                     assertThat(dto).hasFieldOrPropertyWithValue("status", BookingStatus.WAITING);
                 });
+        bookingDto.setItemId(2);
+        assertThrows(ItemAvailableException.class, () -> bookingService.addBooking(bookingDto, 1));
     }
 
     @Test
@@ -173,6 +176,12 @@ class BookingServiceImplTest {
 
     @Test
     @Order(8)
+    void getBookingByOwnerUnsupported() {
+        assertThrows(BookingUnsupportedStatusException.class, () -> bookingService.getBookingByOwner(1, "unsupported", 0, 10));
+    }
+
+    @Test
+    @Order(9)
     void getBookingByBookerAll() {
         Optional<Collection<BookingDto>> bookingDtos = Optional.of(bookingService.getBookingByBooker(2, "ALL", 0, 10));
         assertThat(bookingDtos)
@@ -185,7 +194,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    @Order(9)
+    @Order(10)
     void getBookingByBookerWaiting() {
         Optional<Collection<BookingDto>> bookingDtos = Optional.of(bookingService.getBookingByBooker(2, "WAITING", 0, 10));
         assertThat(bookingDtos)
@@ -194,7 +203,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    @Order(10)
+    @Order(11)
     void getBookingByBookerCURRENT() {
         Optional<Collection<BookingDto>> bookingDtos = Optional.of(bookingService.getBookingByBooker(2, "CURRENT", 0, 10));
         assertThat(bookingDtos)
@@ -203,7 +212,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    @Order(11)
+    @Order(12)
     void getBookingByBookerPAST() {
         Optional<Collection<BookingDto>> bookingDtos = Optional.of(bookingService.getBookingByBooker(2, "PAST", 0, 10));
         assertThat(bookingDtos)
@@ -212,7 +221,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    @Order(12)
+    @Order(13)
     void getBookingByBookerFUTURE() {
         Optional<Collection<BookingDto>> bookingDtos = Optional.of(bookingService.getBookingByBooker(2, "FUTURE", 0, 10));
         assertThat(bookingDtos)
@@ -221,7 +230,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    @Order(13)
+    @Order(14)
     void getBookingByBookerREJECTED() {
         Optional<Collection<BookingDto>> bookingDtos = Optional.of(bookingService.getBookingByBooker(2, "REJECTED", 0, 10));
         assertThat(bookingDtos)
@@ -230,6 +239,7 @@ class BookingServiceImplTest {
     }
 
     @Test
+    @Order(15)
     void getBookingById() {
         Optional<BookingDto> bookingDto = Optional.of(bookingService.getBookingById(1, 1));
         assertThat(bookingDto)
@@ -254,7 +264,4 @@ class BookingServiceImplTest {
                 BookingStatus.WAITING);
     }
 
-    ShortBookingDto getShortBookingDto() {
-        return new ShortBookingDto(1, 1);
-    }
 }
