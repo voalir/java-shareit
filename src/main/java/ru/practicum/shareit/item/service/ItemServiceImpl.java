@@ -128,8 +128,8 @@ public class ItemServiceImpl implements ItemService {
     @Transactional(readOnly = true)
     public Map<Integer, List<ItemDto>> getItemsByRequest(List<Integer> ids) {
         return itemRepository.findAllByRequestIdIn(ids).stream()
-                .collect(Collectors.groupingBy(item -> item.getRequest().getId()
-                        , Collectors.mapping(ItemMapper::toItemDto, Collectors.toList())));
+                .collect(Collectors.groupingBy(item -> item.getRequest().getId(),
+                        Collectors.mapping(ItemMapper::toItemDto, Collectors.toList())));
     }
 
     private Item getItemToUpdate(Item itemCurrent, ItemDto itemDto) {

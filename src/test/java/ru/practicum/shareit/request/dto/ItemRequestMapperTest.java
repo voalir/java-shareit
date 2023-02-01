@@ -38,7 +38,7 @@ class ItemRequestMapperTest {
     }
 
     @Test
-    void ToItemRequestDtoWithItems() {
+    void toItemRequestDtoWithItems() {
         LocalDateTime localDateTime = LocalDateTime.now();
         ItemRequest itemRequest = getItemRequest(localDateTime);
         ItemRequestDto itemRequestDto = ItemRequestMapper.toItemRequestDto(itemRequest, List.of());
