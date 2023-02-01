@@ -89,7 +89,7 @@ class BookingRepositoryTest {
     @Test
     void findNextBooking() {
         Booking booking = bookingRepository.findNextBooking(1);
-
+        Assertions.assertThat(booking).hasFieldOrPropertyWithValue("id", 3);
     }
 
     @Test
