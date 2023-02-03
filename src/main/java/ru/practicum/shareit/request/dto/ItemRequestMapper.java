@@ -23,7 +23,7 @@ public final class ItemRequestMapper {
         return new ItemRequest(
                 itemRequestDto.getId(),
                 itemRequestDto.getDescription(),
-                UserMapper.toUser(itemRequestDto.getRequestorId()),
+                UserMapper.toUser(itemRequestDto.getRequestor()),
                 LocalDateTime.now()
         );
     }

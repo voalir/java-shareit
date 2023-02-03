@@ -35,7 +35,7 @@ class ItemRequestDtoTest {
                     Assertions.assertThat(jsonContent)
                             .extractingJsonPathStringValue("$.created").isEqualTo(localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")));
                     Assertions.assertThat(jsonContent)
-                            .hasJsonPathValue("requestorId");
+                            .hasJsonPathValue("requestor");
                     Assertions.assertThat(jsonContent)
                             .hasJsonPathValue("items");
                 });

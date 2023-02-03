@@ -19,7 +19,7 @@ class ItemRequestMapperTest {
         ItemRequestDto itemRequestDto = ItemRequestMapper.toItemRequestDto(itemRequest);
         Assertions.assertThat(itemRequestDto)
                 .hasFieldOrPropertyWithValue("id", itemRequest.getId())
-                .hasFieldOrProperty("requestorId")
+                .hasFieldOrProperty("requestor")
                 .hasFieldOrProperty("items")
                 .hasFieldOrPropertyWithValue("description", itemRequest.getDescription())
                 .hasFieldOrPropertyWithValue("created", itemRequest.getCreated());
@@ -43,7 +43,7 @@ class ItemRequestMapperTest {
         ItemRequestDto itemRequestDto = ItemRequestMapper.toItemRequestDto(itemRequest, List.of());
         Assertions.assertThat(itemRequestDto)
                 .hasFieldOrPropertyWithValue("id", itemRequest.getId())
-                .hasFieldOrProperty("requestorId")
+                .hasFieldOrProperty("requestor")
                 .hasFieldOrProperty("items")
                 .hasFieldOrPropertyWithValue("description", itemRequest.getDescription())
                 .hasFieldOrPropertyWithValue("created", itemRequest.getCreated());

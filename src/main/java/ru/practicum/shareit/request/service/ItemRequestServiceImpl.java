@@ -36,7 +36,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     @Transactional
     public ItemRequestDto addItemRequest(Integer userId, ItemRequestDto itemRequestDto) {
-        itemRequestDto.setRequestorId(userService.getUser(userId));//checking user exist
+        itemRequestDto.setRequestor(userService.getUser(userId));//checking user exist
         ItemRequest savedItemRequest = requestRepository.save(ItemRequestMapper.toItemRequest(itemRequestDto));
         return ItemRequestMapper.toItemRequestDto(savedItemRequest);
     }

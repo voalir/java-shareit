@@ -36,8 +36,8 @@ class ItemRequestServiceImplTest {
                 .hasValueSatisfying(request -> {
                             Assertions.assertThat(request).hasFieldOrPropertyWithValue("id", 1);
                             Assertions.assertThat(request).hasFieldOrPropertyWithValue("description", itemRequestDto.getDescription());
-                            Assertions.assertThat(request.getRequestorId()).hasFieldOrPropertyWithValue("id", 1);
-                            Assertions.assertThat(request).hasFieldOrProperty("created");
+                    Assertions.assertThat(request.getRequestor()).hasFieldOrPropertyWithValue("id", 1);
+                    Assertions.assertThat(request).hasFieldOrProperty("created");
                             Assertions.assertThat(request).hasFieldOrPropertyWithValue("items", itemRequestDto.getItems());
                         }
                 );
@@ -47,9 +47,9 @@ class ItemRequestServiceImplTest {
                 .isPresent()
                 .hasValueSatisfying(request -> {
                             Assertions.assertThat(request).hasFieldOrPropertyWithValue("id", 2);
-                            Assertions.assertThat(request).hasFieldOrPropertyWithValue("description", itemRequestDto.getDescription());
-                            Assertions.assertThat(request.getRequestorId()).hasFieldOrPropertyWithValue("id", 2);
-                            Assertions.assertThat(request).hasFieldOrProperty("created");
+                    Assertions.assertThat(request).hasFieldOrPropertyWithValue("description", itemRequestDto.getDescription());
+                    Assertions.assertThat(request.getRequestor()).hasFieldOrPropertyWithValue("id", 2);
+                    Assertions.assertThat(request).hasFieldOrProperty("created");
                             Assertions.assertThat(request).hasFieldOrPropertyWithValue("items", itemRequestDto.getItems());
                         }
                 );
@@ -59,9 +59,9 @@ class ItemRequestServiceImplTest {
                 .isPresent()
                 .hasValueSatisfying(request -> {
                             Assertions.assertThat(request).hasFieldOrPropertyWithValue("id", 3);
-                            Assertions.assertThat(request).hasFieldOrPropertyWithValue("description", itemRequestDto.getDescription());
-                            Assertions.assertThat(request.getRequestorId()).hasFieldOrPropertyWithValue("id", 2);
-                            Assertions.assertThat(request).hasFieldOrProperty("created");
+                    Assertions.assertThat(request).hasFieldOrPropertyWithValue("description", itemRequestDto.getDescription());
+                    Assertions.assertThat(request.getRequestor()).hasFieldOrPropertyWithValue("id", 2);
+                    Assertions.assertThat(request).hasFieldOrProperty("created");
                             Assertions.assertThat(request).hasFieldOrPropertyWithValue("items", itemRequestDto.getItems());
                         }
                 );
@@ -95,9 +95,9 @@ class ItemRequestServiceImplTest {
                 .isPresent()
                 .hasValueSatisfying(request -> {
                             Assertions.assertThat(request).hasFieldOrPropertyWithValue("id", 1);
-                            Assertions.assertThat(request).hasFieldOrPropertyWithValue("description", "request");
-                            Assertions.assertThat(request.getRequestorId()).hasFieldOrPropertyWithValue("id", 1);
-                            Assertions.assertThat(request).hasFieldOrProperty("created");
+                    Assertions.assertThat(request).hasFieldOrPropertyWithValue("description", "request");
+                    Assertions.assertThat(request.getRequestor()).hasFieldOrPropertyWithValue("id", 1);
+                    Assertions.assertThat(request).hasFieldOrProperty("created");
                             Assertions.assertThat(request.getItems()).hasSize(1);
                             Assertions.assertThat(request.getItems().get(0)).hasFieldOrPropertyWithValue("id", 3);
                         }
