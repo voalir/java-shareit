@@ -87,8 +87,24 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional(readOnly = true)
     public List<ItemDto> getItemsByOwner(Integer userId, Integer from, Integer size) {
-        return itemRepository.findByOwnerId(userId, PageRequest.of(from / size, size))
-                .stream().map((item) -> fillAdditionalInfo(userId, item)).collect(Collectors.toList());
+        List<Item> items = itemRepository.findByOwnerId(userId, PageRequest.of(from / size, size));
+        Map<Item, Booking> bookingsNext = bookingRepository.findNextBookings(items).stream()
+                .collect(Collectors.toMap(Booking::getItem, booking -> booking));
+        Map<Item, Booking> bookingsPrevious = bookingRepository.findPreviousBookings(items).stream()
+                .collect(Collectors.toMap(Booking::getItem, booking -> booking));
+        Map<Item, List<Comment>> comments = commentRepository.findAllByItemIn(items).stream()
+                .collect(Collectors.groupingBy(Comment::getItem, Collectors.toList()));
+        return items.stream().map((item) -> {
+                    ItemDto itemDto = ItemMapper.toItemDto(item);
+                    itemDto.setComments(comments.getOrDefault(item, new ArrayList<>()).stream()
+                            .map(CommentMapper::toCommentDto).collect(Collectors.toList()));
+                    itemDto.setLastBooking(bookingsPrevious.containsKey(item) ?
+                            BookingMapper.toShortBookingDto(bookingsPrevious.get(item)) : null);
+                    itemDto.setNextBooking(bookingsNext.containsKey(item) ?
+                            BookingMapper.toShortBookingDto(bookingsNext.get(item)) : null);
+                    return itemDto;
+                }
+        ).collect(Collectors.toList());
     }
 
     @Override
