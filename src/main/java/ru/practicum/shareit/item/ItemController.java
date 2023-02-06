@@ -1,19 +1,21 @@
 package ru.practicum.shareit.item;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
+
 @RestController
 @RequestMapping("/items")
+@Validated
 public class ItemController {
 
     @Autowired
@@ -39,13 +41,17 @@ public class ItemController {
     }
 
     @GetMapping
-    List<ItemDto> getItemsByOwner(@RequestHeader("X-Sharer-User-Id") Integer userId) {
-        return itemService.getItemsByOwner(userId);
+    List<ItemDto> getItemsByOwner(@RequestHeader("X-Sharer-User-Id") Integer userId,
+                                  @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
+                                  @RequestParam(defaultValue = "10") @Positive Integer size) {
+        return itemService.getItemsByOwner(userId, from, size);
     }
 
     @GetMapping("/search")
-    List<ItemDto> searchItems(@RequestParam String text) {
-        return itemService.foundItems(text);
+    List<ItemDto> searchItems(@RequestParam String text,
+                              @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
+                              @RequestParam(defaultValue = "10") @Positive Integer size) {
+        return itemService.foundItems(text, from, size);
     }
 
     @PostMapping("/{itemId}/comment")

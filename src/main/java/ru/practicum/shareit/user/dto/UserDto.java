@@ -1,18 +1,20 @@
 package ru.practicum.shareit.user.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.Email;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 public class UserDto {
 
-    Integer id;
-    String name;
+    private final Integer id;
+    private final String name;
     @Email(message = "Указан некорректный email адрес")
-    String email;
+    private final String email;
 
 
 }

@@ -13,9 +13,8 @@ import ru.practicum.shareit.booking.exception.BookingUnsupportedStatusException;
 import ru.practicum.shareit.item.exception.CommentCreateException;
 import ru.practicum.shareit.item.exception.ItemAvailableException;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
-import ru.practicum.shareit.item.exception.ItemValidateException;
+import ru.practicum.shareit.request.exception.ItemRequestNotFoundException;
 import ru.practicum.shareit.user.exception.UserAccessException;
-import ru.practicum.shareit.user.exception.UserEmailEmployed;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 
 import javax.validation.ValidationException;
@@ -57,26 +56,10 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<Map<String, String>> handleUserDataError(final UserEmailEmployed e) {
-        return new ResponseEntity<>(
-                Map.of("user email duplicate error", e.getMessage()),
-                HttpStatus.CONFLICT
-        );
-    }
-
-    @ExceptionHandler
     public ResponseEntity<Map<String, String>> handleUserAccessError(final UserAccessException e) {
         return new ResponseEntity<>(
                 Map.of("user access error", e.getMessage()),
                 HttpStatus.FORBIDDEN
-        );
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<Map<String, String>> handleItemValidateError(final ItemValidateException e) {
-        return new ResponseEntity<>(
-                Map.of("item validate error", e.getMessage()),
-                HttpStatus.BAD_REQUEST
         );
     }
 
@@ -123,6 +106,14 @@ public class ErrorHandler {
     public ResponseEntity<ExceptionMessage> handleBookingUnsupportedStatusError(final BookingUnsupportedStatusException e) {
         return new ResponseEntity<>(new ExceptionMessage("Unknown state: " + e.getMessage()),
                 HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Map<String, String>> handleItemRequestNotFoundError(final ItemRequestNotFoundException e) {
+        return new ResponseEntity<>(
+                Map.of("item request found error", e.getMessage()),
+                HttpStatus.NOT_FOUND
         );
     }
 

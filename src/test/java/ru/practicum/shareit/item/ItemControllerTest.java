@@ -1,90 +1,178 @@
 package ru.practicum.shareit.item;
 
-import org.junit.jupiter.api.BeforeAll;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.item.service.ItemService;
 
-import javax.validation.Validation;
-import javax.validation.Validator;
-import java.util.ArrayList;
+import java.nio.charset.StandardCharsets;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
-@SpringBootTest
+@WebMvcTest(controllers = ItemController.class)
 class ItemControllerTest {
 
-    static Validator validator;
     @Autowired
-    ItemController itemController;
+    ObjectMapper objectMapper;
     @Autowired
-    UserService userService;
+    MockMvc mockMvc;
+    @MockBean
+    ItemService itemService;
 
-    @BeforeAll
-    static void beforeAll() {
-        validator = Validation.buildDefaultValidatorFactory().usingContext().getValidator();
+    @Test
+    void addItem() throws Exception {
+        int userId = 1;
+        when(itemService.addItem(ArgumentMatchers.anyInt(), ArgumentMatchers.any())).thenReturn(getItemDto("name item"));
+        String content = mockMvc.perform(MockMvcRequestBuilders.post("/items")
+                        .header("X-Sharer-User-Id", userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(getItemDto("name item")))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
+        Assertions.assertEquals(objectMapper.writeValueAsString(getItemDto("name item")), content);
     }
 
     @Test
-    void addItem() {
-        UserDto userDto = new UserDto(null, "name", "vAddOwner@v.v");
-        Integer ownerId = userService.addUser(userDto).getId();
-        ItemDto itemDto = new ItemDto(null, "name", "desc", true, null, null, null, new ArrayList<>());
-        assertEquals(0, validator.validate(itemDto).size());
-        ItemDto addedItemDto = itemController.addItem(ownerId, itemDto);
-        itemDto.setId(addedItemDto.getId());
-        assertEquals(itemDto, addedItemDto);
-        assertEquals(1, validator.validate(
-                new ItemDto(null, "", "desc", true, null, null, null, null)).size());
-        assertEquals(1, validator.validate(
-                new ItemDto(null, null, "desc", true, null, null, null, null)).size());
-        assertEquals(1, validator.validate(
-                new ItemDto(null, "name", "", true, null, null, null, null)).size());
-        assertEquals(1, validator.validate(
-                new ItemDto(null, "name", null, true, null, null, null, null)).size());
+    void addItemBad() throws Exception {
+        int userId = 1;
+        ItemDto itemDto = getItemDto("");
+        mockMvc.perform(MockMvcRequestBuilders.post("/items")
+                        .header("X-Sharer-User-Id", userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(itemDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        Mockito.verify(itemService, Mockito.never()).addItem(ArgumentMatchers.anyInt(), ArgumentMatchers.any());
     }
 
     @Test
-    void pathItem() {
-        UserDto userDto = new UserDto(null, "name", "vPathOwner@v.v");
-        Integer ownerId = userService.addUser(userDto).getId();
-        ItemDto itemDto = new ItemDto(null, "name", "desc", true, null, null, null, null);
-        ItemDto addedItemDto = itemController.addItem(ownerId, itemDto);
-        addedItemDto.setDescription("updated");
-        ItemDto updatedItem = itemController.pathItem(ownerId, addedItemDto.getId(), addedItemDto);
-        assertEquals(addedItemDto, updatedItem);
+    void pathItem() throws Exception {
+        int userId = 1;
+        int itemId = 1;
+        ItemDto itemDto = getItemDto("name item");
+        Mockito.when(itemService.updateItem(ArgumentMatchers.anyInt(), ArgumentMatchers.anyInt(), ArgumentMatchers.any()))
+                .thenReturn(itemDto);
+        String content = mockMvc.perform(MockMvcRequestBuilders.patch("/items/{itemId}", itemId)
+                        .header("X-Sharer-User-Id", userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(itemDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        Assertions.assertEquals(objectMapper.writeValueAsString(itemDto), content);
     }
 
     @Test
-    void getItem() {
-        UserDto userDto = new UserDto(null, "name", "vGetOwner@v.v");
-        Integer ownerId = userService.addUser(userDto).getId();
-        ItemDto itemDto = new ItemDto(null, "name", "desc", true, null, null, null, null);
-        ItemDto addedItemDto = itemController.addItem(ownerId, itemDto);
-        assertEquals(addedItemDto, itemController.getItem(addedItemDto.getId(), 1));
+    void getItem() throws Exception {
+        int itemId = 1;
+        int userId = 1;
+        mockMvc.perform(MockMvcRequestBuilders.get("/items/{itemId}", itemId)
+                        .header("X-Sharer-User-Id", userId))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        Mockito.verify(itemService).getItem(itemId, userId);
     }
 
     @Test
-    void getItemsByOwner() {
-        UserDto userDto = new UserDto(null, "name", "vGetByOwner@v.v");
-        Integer ownerId = userService.addUser(userDto).getId();
-        ItemDto itemDto = new ItemDto(null, "name", "desc", true, null, null, null, null);
-        ItemDto addedItemDto = itemController.addItem(ownerId, itemDto);
-        assertEquals(1, itemController.getItemsByOwner(ownerId).size());
-        assertEquals(addedItemDto, itemController.getItemsByOwner(ownerId).get(0));
+    void getItemNotFound() throws Exception {
+        int itemId = 99;
+        int userId = 1;
+        mockMvc.perform(MockMvcRequestBuilders.get("/items/{itemId}", itemId))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+
+        Mockito.verify(itemService, Mockito.never()).getItem(itemId, userId);
     }
 
     @Test
-    void searchItems() {
-        UserDto userDto = new UserDto(null, "name", "vSearchOwner@v.v");
-        Integer ownerId = userService.addUser(userDto).getId();
-        ItemDto itemDto = new ItemDto(null, "name", "search string", true, null, null, null, null);
-        ItemDto addedItemDto = itemController.addItem(ownerId, itemDto);
-        assertEquals(1, itemController.searchItems("sEaRcH").size());
-        assertEquals(addedItemDto, itemController.searchItems("sEaRcH").get(0));
+    void getItemsByOwner() throws Exception {
+        int userId = 1;
+        int from = 1;
+        int size = 10;
+        mockMvc.perform(MockMvcRequestBuilders.get("/items?from={from}&size={size}", from, size)
+                        .header("X-Sharer-User-Id", userId))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        Mockito.verify(itemService).getItemsByOwner(userId, 1, 10);
+    }
+
+    @Test
+    void getItemsByOwnerNegative() throws Exception {
+        int userId = 1;
+        int from = -1;
+        int size = -10;
+        mockMvc.perform(MockMvcRequestBuilders.get("/items?from={from}&size={size}", from, size)
+                        .header("X-Sharer-User-Id", userId))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        Mockito.verify(itemService, Mockito.never()).getItemsByOwner(userId, 1, 10);
+    }
+
+    @Test
+    void searchItems() throws Exception {
+        String text = "search text";
+        mockMvc.perform(MockMvcRequestBuilders.get("/items/search?text={text}", text))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk());
+        Mockito.verify(itemService).foundItems(text, 0, 10);
+    }
+
+    @Test
+    void addComment() throws Exception {
+        int userId = 1;
+        int itemId = 1;
+        CommentDto commentDto = new CommentDto(1, "comment text", "user");
+        Mockito.when(itemService.addComment(ArgumentMatchers.anyInt(), ArgumentMatchers.anyInt(), ArgumentMatchers.any())).thenReturn(commentDto);
+        String content = mockMvc.perform(MockMvcRequestBuilders.post("/items/{itemId}/comment", itemId)
+                        .header("X-Sharer-User-Id", userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(commentDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        Assertions.assertEquals(objectMapper.writeValueAsString(commentDto), content);
+    }
+
+    ItemDto getItemDto(String name) {
+        return new ItemDto(
+                1,
+                name,
+                "description",
+                false,
+                null,
+                null,
+                null,
+                null
+        );
     }
 }

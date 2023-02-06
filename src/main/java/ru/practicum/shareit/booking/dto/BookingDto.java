@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import ru.practicum.shareit.booking.model.BookingStatus;
@@ -14,13 +15,15 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class BookingDto {
 
-    private Integer id;
+    private final Integer id;
     @FutureOrPresent
-    private LocalDateTime start;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private final LocalDateTime start;
     @Future
-    private LocalDateTime end;
-    private Integer itemId;
-    private ItemDto item;
-    private UserDto booker;
-    private BookingStatus status;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private final LocalDateTime end;
+    private final Integer itemId;
+    private final ItemDto item;
+    private final UserDto booker;
+    private final BookingStatus status;
 }

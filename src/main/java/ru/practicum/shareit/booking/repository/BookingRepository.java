@@ -1,51 +1,53 @@
 package ru.practicum.shareit.booking.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.item.model.Item;
 
-import java.util.Collection;
+import java.util.List;
 
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Integer> {
     @Query("select b from Booking as b where b.item.owner.id = ?1 order by start desc")
-    Collection<Booking> findBookingByOwner(Integer userId);
+    Page<Booking> findBookingByOwner(Integer userId, Pageable pageable);
 
     @Query("select b from Booking as b where b.item.owner.id = ?1 and cast(b.status as text) = ?2 order by start desc")
-    Collection<Booking> findBookingByOwnerAndState(Integer userId, String state);
+    List<Booking> findBookingByOwnerAndState(Integer userId, String state, Pageable pageable);
 
     @Query("select b from Booking as b where b.booker.id = ?1 order by start desc")
-    Collection<Booking> findBookingByBooker(Integer userId);
+    List<Booking> findBookingByBooker(Integer userId, Pageable pageable);
 
     @Query("select b from Booking as b where b.booker.id = ?1 and b.item.id = ?2 and b.end < current_timestamp order by start desc")
-    Collection<Booking> findBookingByBookerAndItem(Integer userId, Integer itemId);
+    List<Booking> findBookingByBookerAndItem(Integer userId, Integer itemId, Pageable pageable);
 
     @Query("select b from Booking as b where b.booker.id = ?1 and cast(b.status as text) = ?2 order by start desc")
-    Collection<Booking> findBookingByBookerAndState(Integer userId, String state);
+    List<Booking> findBookingByBookerAndState(Integer userId, String state, Pageable pageable);
 
     @Query("select b from Booking as b where b.booker.id = ?1 and b.start > current_timestamp order by start desc")
-    Collection<Booking> findBookingByBookerAndStateFuture(Integer userId);
+    List<Booking> findBookingByBookerAndStateFuture(Integer userId, Pageable pageable);
 
     @Query("select b from Booking as b where b.booker.id = ?1 and b.end < current_timestamp order by start desc")
-    Collection<Booking> findBookingByBookerAndStatePast(Integer userId);
+    List<Booking> findBookingByBookerAndStatePast(Integer userId, Pageable pageable);
 
     @Query("select b from Booking as b where b.booker.id = ?1 and current_timestamp between b.start and b.end")
-    Collection<Booking> findBookingByBookerAndStateCurrent(Integer userId);
+    List<Booking> findBookingByBookerAndStateCurrent(Integer userId, Pageable pageable);
 
     @Query("select b from Booking as b where b.item.owner.id = ?1 and b.start > current_timestamp order by start desc")
-    Collection<Booking> findBookingByOwnerAndStateFuture(Integer userId);
+    List<Booking> findBookingByOwnerAndStateFuture(Integer userId, Pageable pageable);
 
     @Query("select b from Booking as b where b.item.owner.id = ?1 and b.end < current_timestamp order by start desc")
-    Collection<Booking> findBookingByOwnerAndStatePast(Integer userId);
+    List<Booking> findBookingByOwnerAndStatePast(Integer userId, Pageable pageable);
 
     @Query("select b from Booking as b where b.item.owner.id = ?1 and current_timestamp between b.start and b.end")
-    Collection<Booking> findBookingByOwnerAndStateCurrent(Integer userId);
+    List<Booking> findBookingByOwnerAndStateCurrent(Integer userId, Pageable pageable);
 
     @Query("select b from Booking as b where b.item.id = ?1 and b.start = " +
-            "(select min(b.start) from Booking as b where b.item.id = ?1 and b.start > current_timestamp)" +
-            "")
+            "(select min(b.start) from Booking as b where b.item.id = ?1 and b.start > current_timestamp)")
     Booking findNextBooking(Integer itemId);
 
     @Query("select b from Booking as b where b.item.id = ?1 and b.end = " +
@@ -55,5 +57,13 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     @Query("select b from Booking as b where b.item.id = :#{#booking.item.id} " +
             "and b.start<:#{#booking.end} and b.end>:#{#booking.start} " +
             "and status = ru.practicum.shareit.booking.model.BookingStatus.APPROVED")
-    Collection<Booking> findApprovedBookingByPeriodAndItem(@Param("booking") Booking booking);
+    List<Booking> findApprovedBookingByPeriodAndItem(@Param("booking") Booking booking);
+
+    @Query("select b from Booking as b where b.item in ?1 and b.start = " +
+            "(select min(boo.start) from Booking as boo where  boo.start > current_timestamp)")
+    List<Booking> findNextBookings(List<Item> items);
+
+    @Query("select b from Booking as b where b.item in ?1 and b.end = " +
+            "(select max(bo.end) from Booking as bo where bo.end < current_timestamp)")
+    List<Booking> findPreviousBookings(List<Item> items);
 }

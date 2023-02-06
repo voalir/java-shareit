@@ -5,6 +5,7 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ItemService {
 
@@ -16,9 +17,13 @@ public interface ItemService {
 
     Item getRawItem(Integer itemId);
 
-    List<ItemDto> getItemsByOwner(Integer userId);
+    List<ItemDto> getItemsByOwner(Integer userId, Integer from, Integer size);
 
-    List<ItemDto> foundItems(String text);
+    List<ItemDto> foundItems(String text, Integer from, Integer size);
 
     CommentDto addComment(Integer userId, Integer itemId, CommentDto commentDto);
+
+    Map<Integer, List<ItemDto>> getItemsByRequest(List<Integer> id);
+
+    List<ItemDto> getItemByRequest(Integer id);
 }
