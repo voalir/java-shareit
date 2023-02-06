@@ -33,7 +33,7 @@ class ItemServiceImplTest {
     @Order(0)
     @Sql(value = {"/DropTables.sql", "/ItemTestPrepare.sql"})
     void addItem() {
-        ItemDto itemDto = getItemDto();
+        ItemDto itemDto = getItemDto(1, null);
         Optional<ItemDto> createdItemDto = Optional.of(itemService.addItem(1, itemDto));
         Assertions.assertThat(createdItemDto)
                 .isPresent()
@@ -44,8 +44,8 @@ class ItemServiceImplTest {
                     Assertions.assertThat(dto).hasFieldOrPropertyWithValue("available", itemDto.getAvailable());
                 });
         assertThrows(UserNotFoundException.class, () -> itemService.addItem(100, itemDto));
-        itemDto.setRequestId(99);
-        assertThrows(ItemRequestNotFoundException.class, () -> itemService.addItem(1, itemDto));
+        ItemDto itemDto99 = getItemDto(null, 99);
+        assertThrows(ItemRequestNotFoundException.class, () -> itemService.addItem(1, itemDto99));
     }
 
     @Test
@@ -213,8 +213,7 @@ class ItemServiceImplTest {
     @Test
     @Order(15)
     void getItemByRequest() {
-        ItemDto itemDto = getItemDto();
-        itemDto.setRequestId(1);
+        ItemDto itemDto = getItemDto(1, 1);
         itemService.addItem(1, itemDto);
         Optional<List<ItemDto>> foundItemDto = Optional.of(itemService.getItemByRequest(1));
         Assertions.assertThat(foundItemDto)
@@ -232,13 +231,13 @@ class ItemServiceImplTest {
                 .hasValueSatisfying(dtos -> Assertions.assertThat(dtos).hasSize(1));
     }
 
-    ItemDto getItemDto() {
+    ItemDto getItemDto(Integer id, Integer requestId) {
         return new ItemDto(
-                1,
+                id,
                 "name item",
                 "description",
                 false,
-                null,
+                requestId,
                 null,
                 null,
                 null

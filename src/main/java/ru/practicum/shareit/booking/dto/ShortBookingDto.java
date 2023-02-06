@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class ShortBookingDto {
-    private Integer id;
-    private Integer bookerId;
+    private final Integer id;
+    private final Integer bookerId;
 }

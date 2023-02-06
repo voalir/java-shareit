@@ -13,11 +13,11 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class ItemRequestDto {
-    private Integer id;
+    private final Integer id;
     @NotBlank
-    private String description;
-    private UserDto requestor;
+    private final String description;
+    private final UserDto requestor;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime created;
-    private List<ItemDto> items;
+    private final LocalDateTime created;
+    private final List<ItemDto> items;
 }

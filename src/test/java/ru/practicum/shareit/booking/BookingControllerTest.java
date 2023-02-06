@@ -35,11 +35,12 @@ class BookingControllerTest {
 
     @Test
     void addBooking() throws Exception {
-        when(bookingService.addBooking(ArgumentMatchers.any(), ArgumentMatchers.anyInt())).thenReturn(getBookingDto());
+        when(bookingService.addBooking(ArgumentMatchers.any(), ArgumentMatchers.anyInt()))
+                .thenReturn(getBookingDto(LocalDateTime.now().plusDays(2)));
         String content = mockMvc.perform(MockMvcRequestBuilders.post("/bookings")
                         .header("X-Sharer-User-Id", 1)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(getBookingDto()))
+                        .content(objectMapper.writeValueAsString(getBookingDto(LocalDateTime.now().plusDays(2))))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -47,13 +48,12 @@ class BookingControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        Assertions.assertEquals(objectMapper.writeValueAsString(getBookingDto()), content);
+        Assertions.assertEquals(objectMapper.writeValueAsString(getBookingDto(LocalDateTime.now().plusDays(2))), content);
     }
 
     @Test
     void addBookingBad() throws Exception {
-        BookingDto bookingDto = getBookingDto();
-        bookingDto.setEnd(LocalDateTime.now().minusDays(3));
+        BookingDto bookingDto = getBookingDto(LocalDateTime.now().minusDays(3));
         mockMvc.perform(MockMvcRequestBuilders.post("/bookings")
                         .header("X-Sharer-User-Id", 1)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -129,10 +129,10 @@ class BookingControllerTest {
         Mockito.verify(bookingService, Mockito.never()).getBookingByBooker(1, "ALL", -1, 0);
     }
 
-    BookingDto getBookingDto() {
+    BookingDto getBookingDto(LocalDateTime end) {
         return new BookingDto(1,
                 LocalDateTime.now().plusDays(1),
-                LocalDateTime.now().plusDays(2),
+                end,
                 1,
                 null,
                 new UserDto(1, "name", "mail"),

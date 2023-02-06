@@ -11,10 +11,10 @@ import javax.validation.constraints.Email;
 @AllArgsConstructor
 public class UserDto {
 
-    Integer id;
-    String name;
+    private final Integer id;
+    private final String name;
     @Email(message = "Указан некорректный email адрес")
-    String email;
+    private final String email;
 
 
 }

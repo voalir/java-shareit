@@ -34,11 +34,11 @@ class ItemControllerTest {
     @Test
     void addItem() throws Exception {
         int userId = 1;
-        when(itemService.addItem(ArgumentMatchers.anyInt(), ArgumentMatchers.any())).thenReturn(getItemDto());
+        when(itemService.addItem(ArgumentMatchers.anyInt(), ArgumentMatchers.any())).thenReturn(getItemDto("name item"));
         String content = mockMvc.perform(MockMvcRequestBuilders.post("/items")
                         .header("X-Sharer-User-Id", userId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(getItemDto()))
+                        .content(objectMapper.writeValueAsString(getItemDto("name item")))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -46,14 +46,13 @@ class ItemControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        Assertions.assertEquals(objectMapper.writeValueAsString(getItemDto()), content);
+        Assertions.assertEquals(objectMapper.writeValueAsString(getItemDto("name item")), content);
     }
 
     @Test
     void addItemBad() throws Exception {
         int userId = 1;
-        ItemDto itemDto = getItemDto();
-        itemDto.setName("");
+        ItemDto itemDto = getItemDto("");
         mockMvc.perform(MockMvcRequestBuilders.post("/items")
                         .header("X-Sharer-User-Id", userId)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -72,8 +71,9 @@ class ItemControllerTest {
     void pathItem() throws Exception {
         int userId = 1;
         int itemId = 1;
-        ItemDto itemDto = getItemDto();
-        Mockito.when(itemService.updateItem(ArgumentMatchers.anyInt(), ArgumentMatchers.anyInt(), ArgumentMatchers.any())).thenReturn(itemDto);
+        ItemDto itemDto = getItemDto("name item");
+        Mockito.when(itemService.updateItem(ArgumentMatchers.anyInt(), ArgumentMatchers.anyInt(), ArgumentMatchers.any()))
+                .thenReturn(itemDto);
         String content = mockMvc.perform(MockMvcRequestBuilders.patch("/items/{itemId}", itemId)
                         .header("X-Sharer-User-Id", userId)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -163,10 +163,10 @@ class ItemControllerTest {
         Assertions.assertEquals(objectMapper.writeValueAsString(commentDto), content);
     }
 
-    ItemDto getItemDto() {
+    ItemDto getItemDto(String name) {
         return new ItemDto(
                 1,
-                "name item",
+                name,
                 "description",
                 false,
                 null,

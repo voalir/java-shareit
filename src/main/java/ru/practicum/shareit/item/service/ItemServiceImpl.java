@@ -5,6 +5,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingMapper;
+import ru.practicum.shareit.booking.dto.ShortBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.item.dto.CommentDto;
@@ -94,16 +95,14 @@ public class ItemServiceImpl implements ItemService {
                 .collect(Collectors.toMap(Booking::getItem, booking -> booking));
         Map<Item, List<Comment>> comments = commentRepository.findAllByItemIn(items).stream()
                 .collect(Collectors.groupingBy(Comment::getItem, Collectors.toList()));
-        return items.stream().map((item) -> {
-                    ItemDto itemDto = ItemMapper.toItemDto(item);
-                    itemDto.setComments(comments.getOrDefault(item, new ArrayList<>()).stream()
-                            .map(CommentMapper::toCommentDto).collect(Collectors.toList()));
-                    itemDto.setLastBooking(bookingsPrevious.containsKey(item) ?
-                            BookingMapper.toShortBookingDto(bookingsPrevious.get(item)) : null);
-                    itemDto.setNextBooking(bookingsNext.containsKey(item) ?
-                            BookingMapper.toShortBookingDto(bookingsNext.get(item)) : null);
-                    return itemDto;
-                }
+        return items.stream().map((item) -> ItemMapper.toItemDto(item,
+                        bookingsNext.containsKey(item) ?
+                                BookingMapper.toShortBookingDto(bookingsNext.get(item)) : null,
+                        bookingsPrevious.containsKey(item) ?
+                                BookingMapper.toShortBookingDto(bookingsPrevious.get(item)) : null,
+                        comments.getOrDefault(item, new ArrayList<>()).stream()
+                                .map(CommentMapper::toCommentDto).collect(Collectors.toList())
+                )
         ).collect(Collectors.toList());
     }
 
@@ -168,19 +167,20 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private ItemDto fillAdditionalInfo(Integer userId, Item item) {
-        ItemDto itemDto = ItemMapper.toItemDto(item);
+        List<CommentDto> commentDtoList = commentRepository.findAllByItemId(item.getId()).stream().map(CommentMapper::toCommentDto)
+                .collect(Collectors.toList());
+        ShortBookingDto nextBookingDto = null;
+        ShortBookingDto lastBookingDto = null;
         if (item.getOwner().getId().equals(userId)) {
             Booking nextBooking = bookingRepository.findNextBooking(item.getId());
             if (nextBooking != null) {
-                itemDto.setNextBooking(BookingMapper.toShortBookingDto(nextBooking));
+                nextBookingDto = BookingMapper.toShortBookingDto(nextBooking);
             }
             Booking previousBooking = bookingRepository.findLastBooking(item.getId());
             if (previousBooking != null) {
-                itemDto.setLastBooking(BookingMapper.toShortBookingDto(previousBooking));
+                lastBookingDto = BookingMapper.toShortBookingDto(previousBooking);
             }
         }
-        itemDto.setComments(commentRepository.findAllByItemId(item.getId()).stream().map(CommentMapper::toCommentDto)
-                .collect(Collectors.toList()));
-        return itemDto;
+        return ItemMapper.toItemDto(item, nextBookingDto, lastBookingDto, commentDtoList);
     }
 }

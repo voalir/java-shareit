@@ -15,11 +15,11 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.exception.ItemAvailableException;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.util.Collection;
@@ -138,9 +138,9 @@ public class BookingServiceImpl implements BookingService {
         if (item.getOwner().getId().equals(userId)) {
             throw new ItemNotFoundException("item with id=" + bookingDto.getItemId() + " is not available to owner");
         }
-        bookingDto.setItem(ItemMapper.toItemDto(item));
-        bookingDto.setBooker(userService.getUser(userId));
-        Booking booking = BookingMapper.toBooking(bookingDto);
+        //bookingDto.setItem(ItemMapper.toItemDto(item));
+        //bookingDto.setBooker(userService.getUser(userId));
+        Booking booking = BookingMapper.toBooking(bookingDto, item, UserMapper.toUser(userService.getUser(userId)));
         booking.setStatus(BookingStatus.WAITING);
         return booking;
     }

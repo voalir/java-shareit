@@ -15,15 +15,15 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class BookingDto {
 
-    private Integer id;
+    private final Integer id;
     @FutureOrPresent
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime start;
+    private final LocalDateTime start;
     @Future
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime end;
-    private Integer itemId;
-    private ItemDto item;
-    private UserDto booker;
-    private BookingStatus status;
+    private final LocalDateTime end;
+    private final Integer itemId;
+    private final ItemDto item;
+    private final UserDto booker;
+    private final BookingStatus status;
 }

@@ -12,15 +12,15 @@ import java.util.List;
 @AllArgsConstructor
 public class ItemDto {
 
-    Integer id;
+    private final Integer id;
     @NotBlank
-    String name;
+    private final String name;
     @NotBlank
-    String description;
+    private final String description;
     @NotNull
-    Boolean available;
-    Integer requestId;
-    ShortBookingDto nextBooking;
-    ShortBookingDto lastBooking;
-    List<CommentDto> comments;
+    private final Boolean available;
+    private final Integer requestId;
+    private final ShortBookingDto nextBooking;
+    private final ShortBookingDto lastBooking;
+    private final List<CommentDto> comments;
 }

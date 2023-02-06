@@ -9,9 +9,9 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 public class CommentDto {
 
-    private Integer id;
+    private final Integer id;
     @NotBlank
-    private String text;
-    private String authorName;
+    private final String text;
+    private final String authorName;
 
 }

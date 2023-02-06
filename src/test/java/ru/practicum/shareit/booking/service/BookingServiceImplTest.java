@@ -36,7 +36,7 @@ class BookingServiceImplTest {
     @Order(0)
     @Sql(value = {"/DropTables.sql", "/BookingTestPrepare.sql"})
     void addBooking() {
-        BookingDto bookingDto = getBookingDto();
+        BookingDto bookingDto = getBookingDto(1, LocalDateTime.now(), LocalDateTime.now().plusDays(1));
         Optional<BookingDto> createdBookingDto = Optional.of(bookingService.addBooking(bookingDto, 3));
         assertThat(createdBookingDto)
                 .isPresent()
@@ -56,8 +56,8 @@ class BookingServiceImplTest {
                     assertThat(dto.getBooker()).hasFieldOrPropertyWithValue("id", 2);
                     assertThat(dto).hasFieldOrPropertyWithValue("status", BookingStatus.WAITING);
                 });
-        bookingDto.setItemId(2);
-        assertThrows(ItemAvailableException.class, () -> bookingService.addBooking(bookingDto, 1));
+        BookingDto bookingDto2 = getBookingDto(2, LocalDateTime.now(), LocalDateTime.now().plusDays(1));
+        assertThrows(ItemAvailableException.class, () -> bookingService.addBooking(bookingDto2, 1));
     }
 
     @Test
@@ -104,9 +104,7 @@ class BookingServiceImplTest {
         assertThat(bookingDtos)
                 .isPresent()
                 .hasValueSatisfying(element -> Assertions.assertThat(element).hasSize(0));
-        BookingDto bookingDto = getBookingDto();
-        bookingDto.setStart(LocalDateTime.now().plusDays(1));
-        bookingDto.setEnd(LocalDateTime.now().plusDays(2));
+        BookingDto bookingDto = getBookingDto(1, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2));
         Optional<BookingDto> createdBookingDtoFuture = Optional.of(bookingService.addBooking(bookingDto, 2));
         assertThat(createdBookingDtoFuture)
                 .isPresent()
@@ -138,9 +136,7 @@ class BookingServiceImplTest {
         assertThat(bookingDtos)
                 .isPresent()
                 .hasValueSatisfying(element -> Assertions.assertThat(element).hasSize(0));
-        BookingDto bookingDto = getBookingDto();
-        bookingDto.setStart(LocalDateTime.now().minusDays(2));
-        bookingDto.setEnd(LocalDateTime.now().minusDays(1));
+        BookingDto bookingDto = getBookingDto(1, LocalDateTime.now().minusDays(2), LocalDateTime.now().minusDays(1));
         Optional<BookingDto> createdBookingDtoFuture = Optional.of(bookingService.addBooking(bookingDto, 2));
         assertThat(createdBookingDtoFuture)
                 .isPresent()
@@ -254,11 +250,11 @@ class BookingServiceImplTest {
         assertThrows(BookingNotFoundException.class, () -> bookingService.getBookingById(2, 99));
     }
 
-    BookingDto getBookingDto() {
+    BookingDto getBookingDto(Integer itemId, LocalDateTime start, LocalDateTime end) {
         return new BookingDto(null,
-                LocalDateTime.now(),
-                LocalDateTime.now().plusDays(1),
-                1,
+                start,
+                end,
+                itemId,
                 null,
                 new UserDto(1, "name", "mail"),
                 BookingStatus.WAITING);
