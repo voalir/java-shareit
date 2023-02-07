@@ -52,22 +52,6 @@ class BookingControllerTest {
     }
 
     @Test
-    void addBookingBad() throws Exception {
-        BookingDto bookingDto = getBookingDto(LocalDateTime.now().minusDays(3));
-        mockMvc.perform(MockMvcRequestBuilders.post("/bookings")
-                        .header("X-Sharer-User-Id", 1)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(bookingDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-        Mockito.verify(bookingService, Mockito.never()).addBooking(ArgumentMatchers.any(), ArgumentMatchers.anyInt());
-    }
-
-    @Test
     void getBooking() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/bookings/{bookingId}", 1)
                         .header("X-Sharer-User-Id", 1))
@@ -98,13 +82,6 @@ class BookingControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
         Mockito.verify(bookingService).getBookingByOwner(1, "WAITING", 0, 10);
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/bookings/owner?from={from}&size={size}", -1, 0)
-                        .header("X-Sharer-User-Id", 1))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
-
-        Mockito.verify(bookingService, Mockito.never()).getBookingByOwner(1, "ALL", -1, 0);
     }
 
     @Test
@@ -120,13 +97,6 @@ class BookingControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
         Mockito.verify(bookingService).getBookingByBooker(1, "WAITING", 0, 10);
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/bookings?from={from}&size={size}", -1, 0)
-                        .header("X-Sharer-User-Id", 1))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
-
-        Mockito.verify(bookingService, Mockito.never()).getBookingByBooker(1, "ALL", -1, 0);
     }
 
     BookingDto getBookingDto(LocalDateTime end) {

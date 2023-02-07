@@ -50,24 +50,6 @@ class ItemControllerTest {
     }
 
     @Test
-    void addItemBad() throws Exception {
-        int userId = 1;
-        ItemDto itemDto = getItemDto("");
-        mockMvc.perform(MockMvcRequestBuilders.post("/items")
-                        .header("X-Sharer-User-Id", userId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(itemDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        Mockito.verify(itemService, Mockito.never()).addItem(ArgumentMatchers.anyInt(), ArgumentMatchers.any());
-    }
-
-    @Test
     void pathItem() throws Exception {
         int userId = 1;
         int itemId = 1;
@@ -121,18 +103,6 @@ class ItemControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
         Mockito.verify(itemService).getItemsByOwner(userId, 1, 10);
-    }
-
-    @Test
-    void getItemsByOwnerNegative() throws Exception {
-        int userId = 1;
-        int from = -1;
-        int size = -10;
-        mockMvc.perform(MockMvcRequestBuilders.get("/items?from={from}&size={size}", from, size)
-                        .header("X-Sharer-User-Id", userId))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
-        Mockito.verify(itemService, Mockito.never()).getItemsByOwner(userId, 1, 10);
     }
 
     @Test

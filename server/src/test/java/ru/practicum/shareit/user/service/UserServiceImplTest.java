@@ -25,7 +25,7 @@ class UserServiceImplTest {
 
     @Test
     @Order(0)
-    @Sql(value = {"/src/test/resources/DropTables.sql"})
+    @Sql(value = {"/DropTables.sql"})
     void addUser() {
         UserDto userDto = new UserDto(null, "name", "mail@mail.m");
         UserDto userDto2 = new UserDto(null, "name2", "mail2@mail.m");

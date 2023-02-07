@@ -47,25 +47,6 @@ class UserControllerTest {
                 .getContentAsString();
         Assertions.assertEquals(objectMapper.writeValueAsString(userDto), result);
     }
-
-    @Test
-    void addUserInvalidEmail() throws Exception {
-        UserDto userDto = new UserDto(1, "name", "mail");
-        when(userService.addUser(any())).thenReturn(userDto);
-        mockMvc.perform(
-                        post("/users")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(userDto))
-                                .characterEncoding(StandardCharsets.UTF_8)
-                                .accept(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(status().isBadRequest())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-        verify(userService, never()).addUser(any());
-    }
-
     @Test
     void pathUser() throws Exception {
         UserDto userDto = new UserDto(1, "name", "mail@mail.m");

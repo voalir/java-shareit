@@ -33,7 +33,7 @@ class BookingServiceImplTest {
 
     @Test
     @Order(0)
-    @Sql(value = {"/src/test/resources/DropTables.sql", "/BookingTestPrepare.sql"})
+    @Sql(value = {"/DropTables.sql", "/BookingTestPrepare.sql"})
     void addBooking() {
         BookingDto bookingDto = getBookingDto(1, LocalDateTime.now(), LocalDateTime.now().plusDays(1));
         Optional<BookingDto> createdBookingDto = Optional.of(bookingService.addBooking(bookingDto, 3));

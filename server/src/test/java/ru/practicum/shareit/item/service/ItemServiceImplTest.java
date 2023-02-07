@@ -31,7 +31,7 @@ class ItemServiceImplTest {
 
     @Test
     @Order(0)
-    @Sql(value = {"/src/test/resources/DropTables.sql", "/ItemTestPrepare.sql"})
+    @Sql(value = {"/DropTables.sql", "/ItemTestPrepare.sql"})
     void addItem() {
         ItemDto itemDto = getItemDto(1, null);
         Optional<ItemDto> createdItemDto = Optional.of(itemService.addItem(1, itemDto));
@@ -191,7 +191,7 @@ class ItemServiceImplTest {
 
     @Test
     @Order(14)
-    @Sql(value = {"/src/test/resources/ItemTestPrepareBooking.sql"})
+    @Sql(value = {"/ItemTestPrepareBooking.sql"})
     void addComment() {
         CommentDto commentDto = new CommentDto(null, "comment", null);
 

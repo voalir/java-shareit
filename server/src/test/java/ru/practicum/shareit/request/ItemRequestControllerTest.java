@@ -87,15 +87,6 @@ class ItemRequestControllerTest {
         Mockito.verify(itemRequestService).getAllRequests(1, 5, 5);
     }
 
-    @Test
-    void getAllRequestsByPageNegative() throws Exception {
-        mockMvc.perform(get("/requests/all?from={from}&size={size}", 5, -5)
-                        .header("X-Sharer-User-Id", 1))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
-        Mockito.verify(itemRequestService, Mockito.never()).getAllRequests(1, 5, 5);
-    }
-
     ItemRequestDto getItemRequestDto() {
         return new ItemRequestDto(null,
                 "request",

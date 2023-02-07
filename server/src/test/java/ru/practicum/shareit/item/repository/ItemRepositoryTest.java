@@ -11,7 +11,7 @@ import ru.practicum.shareit.item.model.Item;
 import java.util.List;
 
 @DataJpaTest
-@Sql(value = {"/src/test/resources/DropTables.sql", "/JpaRepositoryPrepare.sql"})
+@Sql(value = {"/DropTables.sql", "/JpaRepositoryPrepare.sql"})
 class ItemRepositoryTest {
 
     @Autowired

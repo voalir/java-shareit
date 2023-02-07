@@ -26,7 +26,7 @@ class ItemRequestServiceImplTest {
 
     @Test
     @Order(0)
-    @Sql(value = {"/src/test/resources/DropTables.sql", "/AddUsers.sql"})
+    @Sql(value = {"/DropTables.sql", "/AddUsers.sql"})
     void addItemRequest() {
         ItemRequestDto itemRequestDto = getItemRequestDto();
         Optional<ItemRequestDto> createdRequest = Optional.of(
@@ -81,7 +81,7 @@ class ItemRequestServiceImplTest {
 
     @Test
     @Order(2)
-    @Sql(value = {"/src/test/resources/ItemRequestTestPrepare.sql"})
+    @Sql(value = {"/ItemRequestTestPrepare.sql"})
     void getRequestsByRequester() {
         Assertions.assertThat(itemRequestService.getRequests(1)).hasSize(1)
                 .map(ItemRequestDto::getId).contains(1);
