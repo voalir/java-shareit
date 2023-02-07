@@ -34,11 +34,11 @@ class ItemControllerTest {
     @Test
     void addItem() throws Exception {
         int userId = 1;
-        when(itemService.addItem(ArgumentMatchers.anyInt(), ArgumentMatchers.any())).thenReturn(getItemDto("name item"));
+        when(itemService.addItem(ArgumentMatchers.anyInt(), ArgumentMatchers.any())).thenReturn(getItemDto());
         String content = mockMvc.perform(MockMvcRequestBuilders.post("/items")
                         .header("X-Sharer-User-Id", userId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(getItemDto("name item")))
+                        .content(objectMapper.writeValueAsString(getItemDto()))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -46,14 +46,14 @@ class ItemControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        Assertions.assertEquals(objectMapper.writeValueAsString(getItemDto("name item")), content);
+        Assertions.assertEquals(objectMapper.writeValueAsString(getItemDto()), content);
     }
 
     @Test
     void pathItem() throws Exception {
         int userId = 1;
         int itemId = 1;
-        ItemDto itemDto = getItemDto("name item");
+        ItemDto itemDto = getItemDto();
         Mockito.when(itemService.updateItem(ArgumentMatchers.anyInt(), ArgumentMatchers.anyInt(), ArgumentMatchers.any()))
                 .thenReturn(itemDto);
         String content = mockMvc.perform(MockMvcRequestBuilders.patch("/items/{itemId}", itemId)
@@ -133,10 +133,10 @@ class ItemControllerTest {
         Assertions.assertEquals(objectMapper.writeValueAsString(commentDto), content);
     }
 
-    ItemDto getItemDto(String name) {
+    ItemDto getItemDto() {
         return new ItemDto(
                 1,
-                name,
+                "name item",
                 "description",
                 false,
                 null,
