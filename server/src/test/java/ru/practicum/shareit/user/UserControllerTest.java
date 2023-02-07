@@ -47,6 +47,7 @@ class UserControllerTest {
                 .getContentAsString();
         Assertions.assertEquals(objectMapper.writeValueAsString(userDto), result);
     }
+
     @Test
     void pathUser() throws Exception {
         UserDto userDto = new UserDto(1, "name", "mail@mail.m");
