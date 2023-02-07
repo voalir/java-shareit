@@ -88,7 +88,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional(readOnly = true)
     public List<ItemDto> getItemsByOwner(Integer userId, Integer from, Integer size) {
-        List<Item> items = itemRepository.findByOwnerId(userId, PageRequest.of(from / size, size));
+        List<Item> items = itemRepository.findByOwnerIdOrderById(userId, PageRequest.of(from / size, size));
         Map<Item, Booking> bookingsNext = bookingRepository.findNextBookings(items).stream()
                 .collect(Collectors.toMap(Booking::getItem, booking -> booking));
         Map<Item, Booking> bookingsPrevious = bookingRepository.findPreviousBookings(items).stream()
