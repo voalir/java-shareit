@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -75,13 +76,13 @@ class BookingControllerTest {
                         .header("X-Sharer-User-Id", 1))
                 .andDo(print())
                 .andExpect(status().isOk());
-        Mockito.verify(bookingService).getBookingByOwner(1, "ALL", 0, 10);
+        Mockito.verify(bookingService).getBookingByOwner(1, BookingState.ALL, 0, 10);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/bookings/owner?state={state}", "WAITING")
                         .header("X-Sharer-User-Id", 1))
                 .andDo(print())
                 .andExpect(status().isOk());
-        Mockito.verify(bookingService).getBookingByOwner(1, "WAITING", 0, 10);
+        Mockito.verify(bookingService).getBookingByOwner(1, BookingState.WAITING, 0, 10);
     }
 
     @Test
@@ -90,13 +91,13 @@ class BookingControllerTest {
                         .header("X-Sharer-User-Id", 1))
                 .andDo(print())
                 .andExpect(status().isOk());
-        Mockito.verify(bookingService).getBookingByBooker(1, "ALL", 0, 10);
+        Mockito.verify(bookingService).getBookingByBooker(1, BookingState.ALL, 0, 10);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/bookings?state={state}", "WAITING")
                         .header("X-Sharer-User-Id", 1))
                 .andDo(print())
                 .andExpect(status().isOk());
-        Mockito.verify(bookingService).getBookingByBooker(1, "WAITING", 0, 10);
+        Mockito.verify(bookingService).getBookingByBooker(1, BookingState.WAITING, 0, 10);
     }
 
     BookingDto getBookingDto(LocalDateTime end) {

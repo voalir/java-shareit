@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
@@ -17,7 +18,7 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     Page<Booking> findBookingByOwner(Integer userId, Pageable pageable);
 
     @Query("select b from Booking as b where b.item.owner.id = ?1 and cast(b.status as text) = ?2 order by start desc")
-    List<Booking> findBookingByOwnerAndState(Integer userId, String state, Pageable pageable);
+    List<Booking> findBookingByOwnerAndState(Integer userId, BookingState state, Pageable pageable);
 
     @Query("select b from Booking as b where b.booker.id = ?1 order by start desc")
     List<Booking> findBookingByBooker(Integer userId, Pageable pageable);
@@ -26,7 +27,7 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     List<Booking> findBookingByBookerAndItem(Integer userId, Integer itemId, Pageable pageable);
 
     @Query("select b from Booking as b where b.booker.id = ?1 and cast(b.status as text) = ?2 order by start desc")
-    List<Booking> findBookingByBookerAndState(Integer userId, String state, Pageable pageable);
+    List<Booking> findBookingByBookerAndState(Integer userId, BookingState state, Pageable pageable);
 
     @Query("select b from Booking as b where b.booker.id = ?1 and b.start > current_timestamp order by start desc")
     List<Booking> findBookingByBookerAndStateFuture(Integer userId, Pageable pageable);

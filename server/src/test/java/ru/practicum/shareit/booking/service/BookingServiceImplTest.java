@@ -12,6 +12,7 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.exception.BookingAccessException;
 import ru.practicum.shareit.booking.exception.BookingCheckException;
 import ru.practicum.shareit.booking.exception.BookingNotFoundException;
+import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.item.exception.ItemAvailableException;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
@@ -90,7 +91,7 @@ class BookingServiceImplTest {
     @Test
     @Order(2)
     void getBookingByOwnerAll() {
-        Optional<Collection<BookingDto>> bookingDtos = Optional.of(bookingService.getBookingByOwner(1, "ALL", 0, 10));
+        Optional<Collection<BookingDto>> bookingDtos = Optional.of(bookingService.getBookingByOwner(1, BookingState.ALL, 0, 10));
         assertThat(bookingDtos)
                 .isPresent()
                 .hasValueSatisfying(element -> Assertions.assertThat(element).hasSize(2));
@@ -99,7 +100,7 @@ class BookingServiceImplTest {
     @Test
     @Order(3)
     void getBookingByOwnerWaiting() {
-        Optional<Collection<BookingDto>> bookingDtos = Optional.of(bookingService.getBookingByOwner(1, "WAITING", 0, 10));
+        Optional<Collection<BookingDto>> bookingDtos = Optional.of(bookingService.getBookingByOwner(1, BookingState.WAITING, 0, 10));
         assertThat(bookingDtos)
                 .isPresent()
                 .hasValueSatisfying(element -> Assertions.assertThat(element).hasSize(0));
@@ -113,7 +114,7 @@ class BookingServiceImplTest {
                     assertThat(dto.getBooker()).hasFieldOrPropertyWithValue("id", 2);
                     assertThat(dto).hasFieldOrPropertyWithValue("status", BookingStatus.WAITING);
                 });
-        bookingDtos = Optional.of(bookingService.getBookingByOwner(1, "WAITING", 0, 10));
+        bookingDtos = Optional.of(bookingService.getBookingByOwner(1, BookingState.WAITING, 0, 10));
         assertThat(bookingDtos)
                 .isPresent()
                 .hasValueSatisfying(element -> Assertions.assertThat(element).hasSize(1));
@@ -122,7 +123,7 @@ class BookingServiceImplTest {
     @Test
     @Order(4)
     void getBookingByOwnerCURRENT() {
-        Optional<Collection<BookingDto>> bookingDtos = Optional.of(bookingService.getBookingByOwner(1, "CURRENT", 0, 10));
+        Optional<Collection<BookingDto>> bookingDtos = Optional.of(bookingService.getBookingByOwner(1, BookingState.CURRENT, 0, 10));
         assertThat(bookingDtos)
                 .isPresent()
                 .hasValueSatisfying(element -> Assertions.assertThat(element).hasSize(2));
@@ -131,7 +132,7 @@ class BookingServiceImplTest {
     @Test
     @Order(5)
     void getBookingByOwnerPAST() {
-        Optional<Collection<BookingDto>> bookingDtos = Optional.of(bookingService.getBookingByOwner(1, "PAST", 0, 10));
+        Optional<Collection<BookingDto>> bookingDtos = Optional.of(bookingService.getBookingByOwner(1, BookingState.PAST, 0, 10));
         assertThat(bookingDtos)
                 .isPresent()
                 .hasValueSatisfying(element -> Assertions.assertThat(element).hasSize(0));
@@ -145,7 +146,7 @@ class BookingServiceImplTest {
                     assertThat(dto.getBooker()).hasFieldOrPropertyWithValue("id", 2);
                     assertThat(dto).hasFieldOrPropertyWithValue("status", BookingStatus.WAITING);
                 });
-        bookingDtos = Optional.of(bookingService.getBookingByOwner(1, "PAST", 0, 10));
+        bookingDtos = Optional.of(bookingService.getBookingByOwner(1, BookingState.PAST, 0, 10));
         assertThat(bookingDtos)
                 .isPresent()
                 .hasValueSatisfying(element -> Assertions.assertThat(element).hasSize(1));
@@ -154,7 +155,7 @@ class BookingServiceImplTest {
     @Test
     @Order(6)
     void getBookingByOwnerFUTURE() {
-        Optional<Collection<BookingDto>> bookingDtos = Optional.of(bookingService.getBookingByOwner(1, "FUTURE", 0, 10));
+        Optional<Collection<BookingDto>> bookingDtos = Optional.of(bookingService.getBookingByOwner(1, BookingState.FUTURE, 0, 10));
         assertThat(bookingDtos)
                 .isPresent()
                 .hasValueSatisfying(element -> Assertions.assertThat(element).hasSize(1));
@@ -163,7 +164,7 @@ class BookingServiceImplTest {
     @Test
     @Order(7)
     void getBookingByOwnerREJECTED() {
-        Optional<Collection<BookingDto>> bookingDtos = Optional.of(bookingService.getBookingByOwner(1, "REJECTED", 0, 10));
+        Optional<Collection<BookingDto>> bookingDtos = Optional.of(bookingService.getBookingByOwner(1, BookingState.REJECTED, 0, 10));
         assertThat(bookingDtos)
                 .isPresent()
                 .hasValueSatisfying(element -> Assertions.assertThat(element).hasSize(1));
@@ -172,11 +173,11 @@ class BookingServiceImplTest {
     @Test
     @Order(9)
     void getBookingByBookerAll() {
-        Optional<Collection<BookingDto>> bookingDtos = Optional.of(bookingService.getBookingByBooker(2, "ALL", 0, 10));
+        Optional<Collection<BookingDto>> bookingDtos = Optional.of(bookingService.getBookingByBooker(2, BookingState.ALL, 0, 10));
         assertThat(bookingDtos)
                 .isPresent()
                 .hasValueSatisfying(element -> Assertions.assertThat(element).hasSize(3));
-        Optional<Collection<BookingDto>> bookingDtosSize2 = Optional.of(bookingService.getBookingByBooker(2, "ALL", 0, 2));
+        Optional<Collection<BookingDto>> bookingDtosSize2 = Optional.of(bookingService.getBookingByBooker(2, BookingState.ALL, 0, 2));
         assertThat(bookingDtosSize2)
                 .isPresent()
                 .hasValueSatisfying(element -> Assertions.assertThat(element).hasSize(2));
@@ -185,7 +186,7 @@ class BookingServiceImplTest {
     @Test
     @Order(10)
     void getBookingByBookerWaiting() {
-        Optional<Collection<BookingDto>> bookingDtos = Optional.of(bookingService.getBookingByBooker(2, "WAITING", 0, 10));
+        Optional<Collection<BookingDto>> bookingDtos = Optional.of(bookingService.getBookingByBooker(2, BookingState.WAITING, 0, 10));
         assertThat(bookingDtos)
                 .isPresent()
                 .hasValueSatisfying(element -> Assertions.assertThat(element).hasSize(2));
@@ -194,7 +195,7 @@ class BookingServiceImplTest {
     @Test
     @Order(11)
     void getBookingByBookerCURRENT() {
-        Optional<Collection<BookingDto>> bookingDtos = Optional.of(bookingService.getBookingByBooker(2, "CURRENT", 0, 10));
+        Optional<Collection<BookingDto>> bookingDtos = Optional.of(bookingService.getBookingByBooker(2, BookingState.CURRENT, 0, 10));
         assertThat(bookingDtos)
                 .isPresent()
                 .hasValueSatisfying(element -> Assertions.assertThat(element).hasSize(1));
@@ -203,7 +204,7 @@ class BookingServiceImplTest {
     @Test
     @Order(12)
     void getBookingByBookerPAST() {
-        Optional<Collection<BookingDto>> bookingDtos = Optional.of(bookingService.getBookingByBooker(2, "PAST", 0, 10));
+        Optional<Collection<BookingDto>> bookingDtos = Optional.of(bookingService.getBookingByBooker(2, BookingState.PAST, 0, 10));
         assertThat(bookingDtos)
                 .isPresent()
                 .hasValueSatisfying(element -> Assertions.assertThat(element).hasSize(1));
@@ -212,7 +213,7 @@ class BookingServiceImplTest {
     @Test
     @Order(13)
     void getBookingByBookerFUTURE() {
-        Optional<Collection<BookingDto>> bookingDtos = Optional.of(bookingService.getBookingByBooker(2, "FUTURE", 0, 10));
+        Optional<Collection<BookingDto>> bookingDtos = Optional.of(bookingService.getBookingByBooker(2, BookingState.FUTURE, 0, 10));
         assertThat(bookingDtos)
                 .isPresent()
                 .hasValueSatisfying(element -> Assertions.assertThat(element).hasSize(1));
@@ -221,7 +222,7 @@ class BookingServiceImplTest {
     @Test
     @Order(14)
     void getBookingByBookerREJECTED() {
-        Optional<Collection<BookingDto>> bookingDtos = Optional.of(bookingService.getBookingByBooker(2, "REJECTED", 0, 10));
+        Optional<Collection<BookingDto>> bookingDtos = Optional.of(bookingService.getBookingByBooker(2, BookingState.REJECTED, 0, 10));
         assertThat(bookingDtos)
                 .isPresent()
                 .hasValueSatisfying(element -> Assertions.assertThat(element).hasSize(1));

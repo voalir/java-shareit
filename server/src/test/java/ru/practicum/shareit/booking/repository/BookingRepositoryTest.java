@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.jdbc.Sql;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.item.model.Item;
 
 import java.time.LocalDateTime;
@@ -28,7 +29,7 @@ class BookingRepositoryTest {
 
     @Test
     void findBookingByOwnerAndState() {
-        List<Booking> booking = bookingRepository.findBookingByOwnerAndState(1, "WAITING", PageRequest.of(0, 5));
+        List<Booking> booking = bookingRepository.findBookingByOwnerAndState(1, BookingState.WAITING, PageRequest.of(0, 5));
         Assertions.assertThat(booking).hasSize(3);
     }
 
@@ -46,7 +47,7 @@ class BookingRepositoryTest {
 
     @Test
     void findBookingByBookerAndState() {
-        List<Booking> booking = bookingRepository.findBookingByBookerAndState(2, "WAITING", PageRequest.of(0, 5));
+        List<Booking> booking = bookingRepository.findBookingByBookerAndState(2, BookingState.WAITING, PageRequest.of(0, 5));
         Assertions.assertThat(booking).hasSize(3);
     }
 

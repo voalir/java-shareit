@@ -57,8 +57,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional(readOnly = true)
-    public Collection<BookingDto> getBookingByOwner(Integer userId, String state, Integer from, Integer size) {
-        BookingState bookingState = BookingState.valueOf(state);
+    public Collection<BookingDto> getBookingByOwner(Integer userId, BookingState bookingState, Integer from, Integer size) {
+
         userService.getUser(userId);//checking user exist
         PageRequest pageRequest = PageRequest.of(from / size, size);
         switch (bookingState) {
@@ -75,15 +75,14 @@ public class BookingServiceImpl implements BookingService {
                 return bookingRepository.findBookingByOwnerAndStateCurrent(userId, pageRequest).stream().map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             default:
-                return bookingRepository.findBookingByOwnerAndState(userId, state, pageRequest).stream().map(BookingMapper::toBookingDto)
+                return bookingRepository.findBookingByOwnerAndState(userId, bookingState, pageRequest).stream().map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
         }
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Collection<BookingDto> getBookingByBooker(Integer userId, String state, Integer from, Integer size) {
-        BookingState bookingState = BookingState.valueOf(state);
+    public Collection<BookingDto> getBookingByBooker(Integer userId, BookingState bookingState, Integer from, Integer size) {
         userService.getUser(userId);//checking user exist
         PageRequest pageRequest = PageRequest.of(from / size, size);
         switch (bookingState) {
@@ -100,7 +99,7 @@ public class BookingServiceImpl implements BookingService {
                 return bookingRepository.findBookingByBookerAndStateCurrent(userId, pageRequest).stream().map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             default:
-                return bookingRepository.findBookingByBookerAndState(userId, state, pageRequest).stream().map(BookingMapper::toBookingDto)
+                return bookingRepository.findBookingByBookerAndState(userId, bookingState, pageRequest).stream().map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
         }
     }
@@ -127,8 +126,6 @@ public class BookingServiceImpl implements BookingService {
         if (item.getOwner().getId().equals(userId)) {
             throw new ItemNotFoundException("item with id=" + bookingDto.getItemId() + " is not available to owner");
         }
-        //bookingDto.setItem(ItemMapper.toItemDto(item));
-        //bookingDto.setBooker(userService.getUser(userId));
         Booking booking = BookingMapper.toBooking(bookingDto, item, UserMapper.toUser(userService.getUser(userId)));
         booking.setStatus(BookingStatus.WAITING);
         return booking;
