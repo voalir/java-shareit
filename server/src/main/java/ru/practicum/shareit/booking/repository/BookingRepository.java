@@ -27,7 +27,6 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     List<Booking> findBookingByBookerAndItem(Integer userId, Integer itemId, Pageable pageable);
 
     @Query("select b from Booking as b where b.booker.id = ?1 and cast(b.status as text) = ?2 order by start desc")
-    //@Query("select b from Booking as b where b.booker.id = ?1 and b.status = ?2 order by start desc")
     List<Booking> findBookingByBookerAndState(Integer userId, String state, Pageable pageable);
 
     @Query("select b from Booking as b where b.booker.id = ?1 and b.start > current_timestamp order by start desc")
