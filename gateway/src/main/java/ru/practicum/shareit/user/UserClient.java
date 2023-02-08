@@ -10,8 +10,6 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.shareit.client.BaseClient;
 import ru.practicum.shareit.user.dto.UserDto;
 
-import javax.validation.ValidationException;
-
 @Service
 public class UserClient extends BaseClient {
 
@@ -28,7 +26,6 @@ public class UserClient extends BaseClient {
     }
 
     public ResponseEntity<Object> addUser(UserDto userDto) {
-        checkEmailByNull(userDto.getEmail());
         return post("", userDto);
     }
 
@@ -48,9 +45,4 @@ public class UserClient extends BaseClient {
         delete("/" + userId);
     }
 
-    private void checkEmailByNull(String email) {
-        if (email == null) {
-            throw new ValidationException("email value is null");
-        }
-    }
 }

@@ -29,7 +29,7 @@ class BookingRepositoryTest {
 
     @Test
     void findBookingByOwnerAndState() {
-        List<Booking> booking = bookingRepository.findBookingByOwnerAndState(1, BookingState.WAITING, PageRequest.of(0, 5));
+        List<Booking> booking = bookingRepository.findBookingByOwnerAndState(1, BookingState.WAITING.name(), PageRequest.of(0, 5));
         Assertions.assertThat(booking).hasSize(3);
     }
 
@@ -47,7 +47,7 @@ class BookingRepositoryTest {
 
     @Test
     void findBookingByBookerAndState() {
-        List<Booking> booking = bookingRepository.findBookingByBookerAndState(2, BookingState.WAITING, PageRequest.of(0, 5));
+        List<Booking> booking = bookingRepository.findBookingByBookerAndState(2, BookingState.WAITING.name(), PageRequest.of(0, 5));
         Assertions.assertThat(booking).hasSize(3);
     }
 

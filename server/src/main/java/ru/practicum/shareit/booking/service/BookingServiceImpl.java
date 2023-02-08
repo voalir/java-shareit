@@ -75,7 +75,7 @@ public class BookingServiceImpl implements BookingService {
                 return bookingRepository.findBookingByOwnerAndStateCurrent(userId, pageRequest).stream().map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             default:
-                return bookingRepository.findBookingByOwnerAndState(userId, bookingState, pageRequest).stream().map(BookingMapper::toBookingDto)
+                return bookingRepository.findBookingByOwnerAndState(userId, bookingState.name(), pageRequest).stream().map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
         }
     }
@@ -99,7 +99,7 @@ public class BookingServiceImpl implements BookingService {
                 return bookingRepository.findBookingByBookerAndStateCurrent(userId, pageRequest).stream().map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             default:
-                return bookingRepository.findBookingByBookerAndState(userId, bookingState, pageRequest).stream().map(BookingMapper::toBookingDto)
+                return bookingRepository.findBookingByBookerAndState(userId, bookingState.name(), pageRequest).stream().map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
         }
     }
