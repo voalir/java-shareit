@@ -1,7 +1,6 @@
 package ru.practicum.shareit.booking;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.service.BookingService;
@@ -10,7 +9,6 @@ import java.util.Collection;
 
 @RestController
 @RequestMapping(path = "/bookings")
-@Validated
 public class BookingController {
 
     @Autowired

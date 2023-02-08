@@ -1,7 +1,6 @@
 package ru.practicum.shareit.request;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.service.ItemRequestService;
@@ -10,7 +9,6 @@ import java.util.Collection;
 
 @RestController
 @RequestMapping(path = "/requests")
-@Validated
 public class ItemRequestController {
 
     @Autowired
