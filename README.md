@@ -1,2 +1,4 @@
 # java-shareit
-Template repository for Shareit project.
+
+Серверная часть приложения проката вещей. Реализовано добавление вещей, запросов на прокат, обработка запросов.
+При разработке используется: Spring Boot, Spring Data, lombok, Spring Jpa. Валидация вынесена в отдельный сервис - шлюз
